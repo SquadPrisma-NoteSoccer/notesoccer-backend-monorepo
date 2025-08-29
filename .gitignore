@@ -1,0 +1,16 @@
+# Default ignored files
+/shelf/
+/workspace.xml
+
+# IDE
+.idea/
+*.iml
+
+# Build
+**/target/
+
+# Secrets por ambiente
+**/src/main/resources/application-dev.properties
+**/src/main/resources/application-prod.properties
+**/.env
+**/.env.*
