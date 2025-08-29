@@ -37,7 +37,7 @@ Este repositório contém todos os **microserviços backend** do projeto **NoteS
 
   Preencha as variáveis de ambiente necessárias (DB_URL, DB_USERNAME, DB_PASSWORD, etc.) de acordo com seu setup local.
 
-  🌱 Contribuindo
+## 🌱 Contribuindo
 
 1. Clone o repositório:
   ```bash
@@ -55,6 +55,6 @@ Este repositório contém todos os **microserviços backend** do projeto **NoteS
 4. Abra um Pull Request para main.
 
 📌 Status:
--Estrutura inicial do monorepo criada ✅
--Orchestration Service em bootstrap 🚧
--Demais serviços aguardando implementação 🚀
+- Estrutura inicial do monorepo criada ✅
+- Orchestration Service em bootstrap 🚧
+- Demais serviços aguardando implementação 🚀
