@@ -1,0 +1,18 @@
+# Default ignored files
+/shelf/
+/workspace.xml
+
+# IDE
+.idea/
+*.iml
+/.vscode/
+.DS_Store
+
+# Build
+**/target/
+
+# Secrets por ambiente
+**/src/main/resources/application-dev.properties
+**/src/main/resources/application-prod.properties
+**/.env
+**/.env.*
