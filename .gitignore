@@ -5,6 +5,8 @@
 # IDE
 .idea/
 *.iml
+/.vscode/
+.DS_Store
 
 # Build
 **/target/
