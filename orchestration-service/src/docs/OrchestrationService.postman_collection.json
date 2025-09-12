@@ -1,0 +1,138 @@
+{
+	"info": {
+		"_postman_id": "ad345e78-3ef4-43bb-b637-bfd1033d279f",
+		"name": "OrchestrationService",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "21803762"
+	},
+	"item": [
+		{
+			"name": "Saga - Consultar",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"200 OK\", () => pm.response.to.have.status(200));\r",
+							"const body = pm.response.json();\r",
+							"\r",
+							"pm.test(\"ID confere\", () => pm.expect(body.id).to.eql(pm.environment.get(\"SAGA_ID\")));\r",
+							"pm.test(\"Status/Steps presentes\", () => {\r",
+							"    pm.expect(body).to.have.property(\"status\");\r",
+							"    pm.expect(body).to.have.property(\"currentStep\");\r",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{notesoccer}}/api/v1/sagas/{{SAGA_ID}}",
+					"host": [
+						"{{notesoccer}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"sagas",
+						"{{SAGA_ID}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Saga - Criar",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code 200/201 OK\", () => {\r",
+							"  pm.expect(pm.response.code).to.be.oneOf([200,201]);\r",
+							"});\r",
+							"\r",
+							"const body = pm.response.json();\r",
+							"pm.test(\"Tem campos básicos\", () => {\r",
+							"    pm.expect(body).to.have.property(\"id\");\r",
+							"    pm.expect(body).to.have.property(\"type\", \"USER_ONBOARDING\");\r",
+							"    pm.expect(body).to.have.property(\"status\");\r",
+							"    pm.expect(body).to.have.property(\"currentStep\");\r",
+							"});\r",
+							"\r",
+							"pm.environment.set(\"SAGA_ID\", body.id);"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"type\": \"USER_ONBOARDING\",\r\n  \"payload\": { \"userId\": \"u-1\" }\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{notesoccer}}/api/v1/sagas",
+					"host": [
+						"{{notesoccer}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"sagas"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Saga - Avançar Step",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"200 OK\", pm.response.to.have.status(200));\r",
+							"const body = pm.response.json();\r",
+							"pm.test(\"Avançou ou completou\", () => {\r",
+							"    pm.expect([\"RUNNING\",\"COMPLETED\"]).to.include(body.status);\r",
+							"})"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"url": {
+					"raw": "{{notesoccer}}/api/v1/sagas/{{SAGA_ID}}/advance",
+					"host": [
+						"{{notesoccer}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"sagas",
+						"{{SAGA_ID}}",
+						"advance"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
