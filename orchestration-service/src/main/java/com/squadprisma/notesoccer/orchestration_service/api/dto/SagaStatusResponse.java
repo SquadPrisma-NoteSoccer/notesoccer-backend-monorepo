@@ -1,5 +1,7 @@
 package com.squadprisma.notesoccer.orchestration_service.api.dto;
 
+import com.fasterxml.jackson.databind.JsonNode;
+
 import java.time.OffsetDateTime;
 import java.util.UUID;
 
@@ -8,7 +10,7 @@ public record SagaStatusResponse(
         String type,
         String status,
         String currentStep,
-        String data,
+        JsonNode data,
         OffsetDateTime createdAt,
         OffsetDateTime updatedAt
 ) {
