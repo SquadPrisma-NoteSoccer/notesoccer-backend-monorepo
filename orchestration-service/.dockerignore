@@ -1,6 +1,7 @@
-target/
+target
 .git
 .gitignore
-Dockerfile
-.dockerignore
-README.md
+**/.idea
+**/.vscode
+**/node_modules
+**/.DS_Store
