@@ -1,37 +1,17 @@
-# ===== Stage 1: Build =====
-FROM eclipse-temurin:21-jdk AS build
+# ==== Stage 1: build ====
+FROM maven:3.9.7-eclipse-temurin-21 AS build
 WORKDIR /repo
 
-# Copia apenas o necessário primeiro (melhor cache)
-COPY .mvn/ .mvn/
-COPY mvnw pom.xml ./
-COPY orchestration-service/pom.xml orchestration-service/pom.xml
-# (se houver dependências compartilhadas)
-COPY shared-libs/pom.xml shared-libs/pom.xml || true
+# Copia o repo inteiro porque o módulo usa POM pai e pode depender de shared-libs
+# (use .dockerignore para não mandar target/, .git/, etc)
+COPY . .
 
-# Depois os fontes
-COPY orchestration-service/ orchestration-service/
-COPY shared-libs/ shared-libs/ || true
+# Builda apenas o módulo orchestration-service e seus dependentes (-am), sem testes
+RUN mvn -q -e -DskipTests -pl orchestration-service -am clean package
 
-RUN chmod +x mvnw
-# -pl orchestration-service -am garante build das dependências do módulo
-RUN ./mvnw -B -DskipTests --no-transfer-progress \
-    -pl orchestration-service -am clean package
-
-# ===== Stage 2: Runtime =====
+# ==== Stage 2: runtime ====
 FROM eclipse-temurin:21-jre
 WORKDIR /app
-
-# copia o jar gerado (wildcard ok)
-ARG JAR_PATH=/repo/orchestration-service/target/*-SNAPSHOT.jar
-COPY --from=build ${JAR_PATH} app.jar
-
-# Ajuste de memória em container pequeno (Render Free/Starter)
-ENV JAVA_TOOL_OPTIONS="-XX:MaxRAMPercentage=75.0"
-
-# Render injeta $PORT; deixamos o padrão local em 8080
-ENV SPRING_PROFILES_ACTIVE=prod
+COPY --from=build /repo/orchestration-service/target/*.jar /app/app.jar
 EXPOSE 8080
-
-# Usa $PORT do Render quando existir
-CMD ["sh","-c","java -Dserver.port=${PORT:-8080} -Dspring.profiles.active=${SPRING_PROFILES_ACTIVE} -jar app.jar"]
+ENTRYPOINT ["sh","-c","java -Dserver.port=$PORT -Dspring.profiles.active=$SPRING_PROFILES_ACTIVE -jar /app/app.jar"]
