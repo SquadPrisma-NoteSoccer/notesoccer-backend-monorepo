@@ -1,6 +1,8 @@
-target/
 .git
 .gitignore
-Dockerfile
-.dockerignore
-README.md
+**/target
+**/.idea
+**/.vscode
+**/*.iml
+**/node_modules
+**/.env*

@@ -163,6 +163,14 @@ public class GlobalExceptionHandler {
                 "Recurso não encontrado.", req.getRequestURI());
     }
 
+    @ExceptionHandler(org.springframework.web.servlet.NoHandlerFoundException.class)
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    Map<String, Object> handleNoHandler(org.springframework.web.servlet.NoHandlerFoundException ex,
+                                        jakarta.servlet.http.HttpServletRequest req) {
+        return base(404, "Not Found", "RESOURCE_NOT_FOUND",
+                "Recurso não encontrado.", req.getRequestURI());
+    }
+
     /* =============== 500 – Fallback genérico =============== */
 
     @ExceptionHandler(Exception.class)
