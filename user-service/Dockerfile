@@ -1,16 +1,17 @@
-# ===== Stage 1: Build (usa wrapper do monorepo) =====
-FROM eclipse-temurin:21-jdk AS build
+# ==== Stage 1: build ====
+FROM maven:3.9.7-eclipse-temurin-21 AS build
 WORKDIR /repo
-COPY . .
-# torna o wrapper executável, se existir
-RUN chmod +x ./mvnw || true
-# Tenta buildar pelo parent agregador; se não houver, usa o pom do módulo
-RUN ./mvnw -B -DskipTests -pl user-service -am clean package \
- || ./mvnw -B -DskipTests -f user-service/pom.xml clean package
 
-# ===== Stage 2: Runtime enxuto =====
+# Copia o repo inteiro porque o módulo usa POM pai e pode depender de shared-libs
+# (use .dockerignore para não mandar target/, .git/, etc)
+COPY . .
+
+# Builda apenas o módulo orchestration-service e seus dependentes (-am), sem testes
+RUN mvn -q -e -DskipTests -pl user-service -am clean package spring-boot:repackage
+
+# ==== Stage 2: runtime ====
 FROM eclipse-temurin:21-jre
 WORKDIR /app
-COPY --from=build /repo/user-service/target/*.jar app.jar
+COPY --from=build /repo/user-service/target/*.jar /app/app.jar
 EXPOSE 8080
-ENTRYPOINT ["sh","-c","java -Dserver.port=$PORT -Dspring.profiles.active=$SPRING_PROFILES_ACTIVE -jar app.jar"]
+ENTRYPOINT ["sh","-c","java -Dserver.port=$PORT -Dspring.profiles.active=$SPRING_PROFILES_ACTIVE -jar /app/app.jar"]
