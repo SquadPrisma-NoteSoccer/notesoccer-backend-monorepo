@@ -7,7 +7,7 @@ WORKDIR /repo
 COPY . .
 
 # Builda apenas o módulo orchestration-service e seus dependentes (-am), sem testes
-RUN mvn -q -e -DskipTests -pl user-service -am clean package spring-boot:repackage
+RUN mvn -q -e -DskipTests -f user-service/pom.xml clean package spring-boot:repackage
 
 # ==== Stage 2: runtime ====
 FROM eclipse-temurin:21-jre
