@@ -1,11 +1,19 @@
 package com.squadprisma.notesoccer.orchestration_service.infra.clients;
 
+import com.squadprisma.notesoccer.orchestration_service.api.dto.CreateUsuarioRequest;
+import com.squadprisma.notesoccer.orchestration_service.api.dto.UsuarioResponse;
+import com.squadprisma.notesoccer.orchestration_service.integrations.UserServiceFeignConfig;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 
-@FeignClient(name = "user-service", url = "${clients.user-service.base-url:http://localhost:8081}")
+@FeignClient(
+        name = "user-service",
+        url = "${external.user-service.base-url}",
+        configuration = UserServiceFeignConfig.class
+)
 public interface UserServiceClient {
 
-    @PostMapping("/internal/users")
-    void createUser(/* DTO interno futuro */);
+    @PostMapping(value = "/api/v1/usuarios", consumes = "application/json")
+    UsuarioResponse criar(@RequestBody CreateUsuarioRequest request);
 }
