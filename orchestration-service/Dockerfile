@@ -1,22 +1,20 @@
 # ==== Stage 1: build ====
-FROM eclipse-temurin:21-jdk AS build
+FROM maven:3.9.11-eclipse-temurin-21 AS build
 WORKDIR /repo
 
 # Copia só o que precisamos para “esquentar” o cache de deps
-COPY .mvn/ .mvn/
-COPY mvnw mvnw
 COPY pom.xml pom.xml
 COPY shared-libs/pom.xml shared-libs/pom.xml
 COPY orchestration-service/pom.xml orchestration-service/pom.xml
 
 # Baixa dependências do módulo alvo e seus dependentes (mais estável)
-RUN ./mvnw -B -U -e -DskipTests -pl orchestration-service -am dependency:go-offline
+RUN mvn -B -U -e -DskipTests -pl orchestration-service -am dependency:go-offline
 
 # Agora copia o resto do código
 COPY . .
 
 # Build com retries e sem pool de conexões HTTP
-RUN ./mvnw -B -U -e -DskipTests \
+RUN mvn -B -U -e -DskipTests \
     -Dmaven.wagon.http.retryHandler.count=5 \
     -Dmaven.wagon.http.pool=false \
     -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=debug \
