@@ -1,0 +1,24 @@
+# VCS e metadados
+.git
+.gitignore
+.gitattributes
+
+# Builds/artefatos
+**/target
+**/build
+**/.mvn/wrapper/maven-wrapper.jar
+
+# IDE / SO
+**/.idea
+**/.vscode
+**/*.iml
+**/.DS_Store
+
+# Node / front eventualmente no mono
+**/node_modules
+**/dist
+
+# Variáveis e arquivos sensíveis
+**/.env
+**/.env.*
+**/*.log
