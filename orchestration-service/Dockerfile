@@ -2,22 +2,28 @@
 FROM maven:3.9.11-eclipse-temurin-21 AS build
 WORKDIR /repo
 
-# Copia só o que precisamos para “esquentar” o cache de deps
+# 1) Copia POMs para esquentar cache de deps (todas as entradas do <modules>)
 COPY pom.xml pom.xml
-COPY shared-libs/pom.xml shared-libs/pom.xml
-COPY orchestration-service/pom.xml orchestration-service/pom.xml
+COPY auth-service/pom.xml            auth-service/pom.xml
+COPY flyer-service/pom.xml           flyer-service/pom.xml
+COPY gateway/pom.xml                 gateway/pom.xml
+COPY match-service/pom.xml           match-service/pom.xml
+COPY notification-service/pom.xml    notification-service/pom.xml
+COPY shared-libs/pom.xml             shared-libs/pom.xml
+COPY team-service/pom.xml            team-service/pom.xml
+COPY user-service/pom.xml            user-service/pom.xml
+COPY orchestration-service/pom.xml   orchestration-service/pom.xml
 
-# Baixa dependências do módulo alvo e seus dependentes (mais estável)
+# 2) Baixa as dependências do módulo alvo e dos dependentes do reactor
 RUN mvn -B -U -e -DskipTests -pl orchestration-service -am dependency:go-offline
 
-# Agora copia o resto do código
+# 3) Agora copia o resto do código
 COPY . .
 
-# Build com retries e sem pool de conexões HTTP
+# 4) Builda somente o orchestration-service (+ dependentes) e empacota o jar
 RUN mvn -B -U -e -DskipTests \
     -Dmaven.wagon.http.retryHandler.count=5 \
     -Dmaven.wagon.http.pool=false \
-    -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=debug \
     -pl orchestration-service -am clean package spring-boot:repackage
 
 # ==== Stage 2: runtime ====
