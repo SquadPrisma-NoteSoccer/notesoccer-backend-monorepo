@@ -1,13 +1,26 @@
 # ==== Stage 1: build ====
-FROM maven:3.9.7-eclipse-temurin-21 AS build
+FROM eclipse-temurin:21-jdk AS build
 WORKDIR /repo
 
-# Copia o repo inteiro porque o módulo usa POM pai e pode depender de shared-libs
-# (use .dockerignore para não mandar target/, .git/, etc)
+# Copia só o que precisamos para “esquentar” o cache de deps
+COPY .mvn/ .mvn/
+COPY mvnw mvnw
+COPY pom.xml pom.xml
+COPY shared-libs/pom.xml shared-libs/pom.xml
+COPY orchestration-service/pom.xml orchestration-service/pom.xml
+
+# Baixa dependências do módulo alvo e seus dependentes (mais estável)
+RUN ./mvnw -B -U -e -DskipTests -pl orchestration-service -am dependency:go-offline
+
+# Agora copia o resto do código
 COPY . .
 
-# Builda apenas o módulo orchestration-service e seus dependentes (-am), sem testes
-RUN mvn -q -e -DskipTests -pl orchestration-service -am clean package spring-boot:repackage
+# Build com retries e sem pool de conexões HTTP
+RUN ./mvnw -B -U -e -DskipTests \
+    -Dmaven.wagon.http.retryHandler.count=5 \
+    -Dmaven.wagon.http.pool=false \
+    -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=debug \
+    -pl orchestration-service -am clean package spring-boot:repackage
 
 # ==== Stage 2: runtime ====
 FROM eclipse-temurin:21-jre
