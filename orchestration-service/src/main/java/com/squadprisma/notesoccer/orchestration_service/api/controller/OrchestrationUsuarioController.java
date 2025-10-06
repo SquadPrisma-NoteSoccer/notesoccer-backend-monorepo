@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @Tag(name = "Usuarios")
 @RestController
-@RequestMapping("/orchestration/v1/usuarios")
+@RequestMapping("api/v1/orchestrador-usuarios")
 public class OrchestrationUsuarioController {
 
     private final UserOrchestrationService service;
