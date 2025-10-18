@@ -18,7 +18,7 @@
         <module>match-service</module>
         <module>notification-service</module>
         <module>shared-libs</module>
-        <module>team-service</module>
+        <module>league-service</module>
         <module>user-service</module>
         <module>orchestration-service</module>
     </modules>
