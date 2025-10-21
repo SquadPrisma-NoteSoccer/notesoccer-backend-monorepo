@@ -10,7 +10,7 @@ COPY gateway/pom.xml                 gateway/pom.xml
 COPY match-service/pom.xml           match-service/pom.xml
 COPY notification-service/pom.xml    notification-service/pom.xml
 COPY shared-libs/pom.xml             shared-libs/pom.xml
-COPY team-service/pom.xml            team-service/pom.xml
+COPY league-service/pom.xml          league-service/pom.xml
 COPY user-service/pom.xml            user-service/pom.xml
 COPY orchestration-service/pom.xml   orchestration-service/pom.xml
 
