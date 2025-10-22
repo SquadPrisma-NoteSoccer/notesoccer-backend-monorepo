@@ -5,18 +5,16 @@ import com.squadprisma.notesoccer.orchestration_service.api.dto.UsuarioResponse;
 import com.squadprisma.notesoccer.orchestration_service.application.port.out.UserServicePort;
 import feign.FeignException;
 import feign.RetryableException;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
 @Service
+@RequiredArgsConstructor
 public class UserOrchestrationService {
 
     private final UserServicePort userPort;
-
-    public UserOrchestrationService(UserServicePort userPort) {
-        this.userPort = userPort;
-    }
 
     public UsuarioResponse criarUsuario(CreateUsuarioRequest req) {
         try {
