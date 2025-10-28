@@ -4,6 +4,7 @@ import com.squadprisma.notesoccer.match_service.domain.exception.ConflictExcepti
 import com.squadprisma.notesoccer.match_service.domain.exception.NotFoundException;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
@@ -42,12 +43,11 @@ public class GlobalExceptionHandler {
 
     // 400 - validação bean
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
-    Map<String, Object> handleValidation(MethodArgumentNotValidException ex, HttpServletRequest req) {
-        String msg = ex.getBindingResult().getFieldErrors().stream()
-                .findFirst().map(e -> e.getField() + ": " + e.getDefaultMessage())
-                .orElse("Validation error");
-        return body(HttpStatus.BAD_REQUEST, "VALIDATION_ERROR", msg, req);
+    public ResponseEntity<?> handle(MethodArgumentNotValidException ex){
+        var errors = ex.getBindingResult().getFieldErrors()
+                .stream().map(f -> Map.of("field", f.getField(), "message", f.getDefaultMessage()))
+                .toList();
+        return ResponseEntity.badRequest().body(Map.of("errors", errors));
     }
 
     // 400 - entrada inválida
