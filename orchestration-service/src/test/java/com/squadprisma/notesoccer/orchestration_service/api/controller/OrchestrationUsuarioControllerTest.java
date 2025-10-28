@@ -4,7 +4,7 @@ package com.squadprisma.notesoccer.orchestration_service.api.controller;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.squadprisma.notesoccer.orchestration_service.api.dto.CreateUsuarioRequest;
 import com.squadprisma.notesoccer.orchestration_service.api.dto.UsuarioResponse;
-import com.squadprisma.notesoccer.orchestration_service.api.exceptions.ApiExceptionHandler;
+import com.squadprisma.notesoccer.orchestration_service.api.exceptions.GlobalExceptionHandler;
 import com.squadprisma.notesoccer.orchestration_service.application.service.UserOrchestrationService;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -28,7 +28,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @WebMvcTest(controllers = OrchestrationUsuarioController.class)
 @AutoConfigureMockMvc(addFilters = false)
-@Import(ApiExceptionHandler.class)
+@Import(GlobalExceptionHandler.class)
 @org.springframework.test.context.ActiveProfiles("test")
 public class OrchestrationUsuarioControllerTest {
 

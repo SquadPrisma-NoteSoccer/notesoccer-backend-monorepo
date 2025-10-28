@@ -1,5 +1,6 @@
 package com.squadprisma.notesoccer.orchestration_service;
 
+import com.squadprisma.notesoccer.orchestration_service.api.exceptions.GlobalExceptionHandler;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
@@ -32,6 +33,6 @@ class OrchestrationServiceApplicationTests {
             SecurityFilterAutoConfiguration.class,
             OAuth2ResourceServerAutoConfiguration.class
     })
-    @Import(com.squadprisma.notesoccer.orchestration_service.api.exceptions.ApiExceptionHandler.class)
+    @Import(GlobalExceptionHandler.class)
     static class MinimalTestConfig { }
 }
