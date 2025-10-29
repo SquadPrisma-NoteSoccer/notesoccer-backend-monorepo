@@ -7,6 +7,8 @@ import com.squadprisma.notesoccer.league_service.service.LigaService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.util.UUID;
+
 import static org.assertj.core.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
@@ -22,13 +24,15 @@ public class LigaServiceTest {
     }
 
     @Test
-    void create_ok_trim_e_normaliza_espacos() {
-        var req = new LigaCreateRequest("  Liga    Zona   Norte  ");
+    void criar_ok_trim_e_normaliza_espacos() {
+        UUID ligaId = UUID.randomUUID();
+        var req = new LigaCreateRequest("  Liga    Zona   Norte  ", ligaId);
         when(repo.save(any(Liga.class))).thenAnswer(inv -> inv.getArgument(0));
 
-        var liga = service.create(req);
+        var liga = service.criar(req);
 
         assertThat(liga.getNome()).isEqualTo("Liga Zona Norte");
+        assertThat(liga.getUserId()).isEqualTo(ligaId);
         verify(repo, times(1)).save(any(Liga.class));
     }
 

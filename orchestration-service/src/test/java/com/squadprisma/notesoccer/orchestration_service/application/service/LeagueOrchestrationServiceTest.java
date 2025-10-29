@@ -47,10 +47,11 @@ public class LeagueOrchestrationServiceTest {
 
     @BeforeEach
     void setup() {
-        ligaReq = new CreateLigaRequest("Liga Zona Norte");
+        ligaId = UUID.randomUUID();
+
+        ligaReq = new CreateLigaRequest("Liga Zona Norte", ligaId);
         ligaResp = new LigaResponse(UUID.randomUUID(), "Liga Zona Norte", Instant.now());
 
-        ligaId = UUID.randomUUID();
         timeNome = "Atlético Jardim";
         timeResp = new TimeResponse(UUID.randomUUID(), ligaId, timeNome, Instant.now());
     }

@@ -12,6 +12,8 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
+import java.util.UUID;
+
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -32,9 +34,9 @@ public class LigaControllerTest extends BaseControllerTest {
         Liga l = new Liga();
         l.setNome("Liga X");
 
-        Mockito.when(service.create(Mockito.any())).thenReturn(l);
+        Mockito.when(service.criar(Mockito.any())).thenReturn(l);
 
-        var body = new LigaCreateRequest("Liga X");
+        var body = new LigaCreateRequest("Liga X", UUID.randomUUID());
 
         mvc.perform(post("/api/v1/ligas")
                         .contentType(MediaType.APPLICATION_JSON)

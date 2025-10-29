@@ -49,7 +49,7 @@ public class OrchestrationLigaControllerTest {
         var resp = new LigaResponse(UUID.randomUUID(), "Liga Zona Norte", Instant.now());
         Mockito.when(service.criarLiga(any())).thenReturn(resp);
 
-        var body = new CreateLigaRequest("Liga Zona Norte");
+        var body = new CreateLigaRequest("Liga Zona Norte", UUID.randomUUID());
 
         mvc.perform(post("/api/v1/orquestrador/ligas")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -61,7 +61,7 @@ public class OrchestrationLigaControllerTest {
 
     @Test
     void post_criar_liga_400_validacao_nome_em_branco() throws Exception {
-        var body = new CreateLigaRequest("   "); // @NotBlank em DTO
+        var body = new CreateLigaRequest("   ", UUID.randomUUID()); // @NotBlank em DTO
 
         mvc.perform(post("/api/v1/orquestrador/ligas")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -74,7 +74,7 @@ public class OrchestrationLigaControllerTest {
         Mockito.when(service.criarLiga(any()))
                 .thenThrow(new ResponseStatusException(CONFLICT, "LEAGUE_ALREADY_EXISTS"));
 
-        var body = new CreateLigaRequest("Liga X");
+        var body = new CreateLigaRequest("Liga X", UUID.randomUUID());
 
         mvc.perform(post("/api/v1/orquestrador/ligas")
                         .contentType(MediaType.APPLICATION_JSON)
