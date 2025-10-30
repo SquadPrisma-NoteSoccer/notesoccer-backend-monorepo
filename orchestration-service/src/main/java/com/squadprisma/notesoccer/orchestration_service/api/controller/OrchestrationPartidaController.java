@@ -4,7 +4,6 @@ import com.squadprisma.notesoccer.orchestration_service.api.dto.CreatePartidaReq
 import com.squadprisma.notesoccer.orchestration_service.api.dto.PartidaResponse;
 import com.squadprisma.notesoccer.orchestration_service.application.service.MatchOrchestrationService;
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -16,13 +15,13 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
+import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.UUID;
 
 @Validated
 @RestController
-@RequestMapping(value = "/api/v1/orquestrador/partidas",
-        produces = "application/json")
+@RequestMapping(value = "/api/v1/orquestrador/partidas", produces = "application/json")
 @RequiredArgsConstructor
 @Tag(name = "Partidas", description = "Orchestrator → Match Service")
 public class OrchestrationPartidaController {
@@ -48,43 +47,12 @@ public class OrchestrationPartidaController {
         return ResponseEntity.created(location).body(resp);
     }
 
-    @Operation(
-            summary = "Buscar partida por ID",
-            responses = {
-                    @ApiResponse(responseCode = "200", description = "OK",
-                            content = @Content(schema = @Schema(implementation = PartidaResponse.class))),
-                    @ApiResponse(responseCode = "404", description = "Não encontrada", content = @Content)
-            }
-    )
-    @GetMapping("/{id}")
-    public PartidaResponse buscarPorId(
-            @Parameter(description = "ID da partida", required = true)
-            @PathVariable("id") UUID id) {
-        return service.buscarPorId(id);
-    }
-
-    @Operation(
-            summary = "Listar partidas",
-            description = "Lista partidas por filtros opcionais (ligaId e/ou teamId)."
-    )
-    @GetMapping
-    public List<PartidaResponse> listar(
-            @Parameter(description = "ID da liga") @RequestParam(value = "ligaId", required = false) UUID ligaId,
-            @Parameter(description = "ID do time (pode retornar partidas como casa ou visitante)")
-            @RequestParam(value = "timeId", required = false) UUID timeId) {
-        return service.listar(ligaId, timeId);
-    }
-
-    @Operation(
-            summary = "Alterar status da partida",
-            description = "Encaminha a troca de status para o match-service (ex.: AGENDADA → ATUALIZADA → CANCELADA → FINALIZADA)."
-    )
-    @PatchMapping("/{id}/status")
-    public PartidaResponse alterarStatus(
-            @Parameter(description = "ID da partida", required = true)
-            @PathVariable("id") UUID id,
-            @Parameter(description = "Novo status", required = true, example = "AGENDADA")
-            @RequestParam("status") String status) {
-        return service.alterarStatus(id, status);
+    @Operation(summary = "Calendário por liga e intervalo (proxy para match-service)")
+    @GetMapping("/calendario")
+    public List<PartidaResponse> calendario(
+            @RequestParam UUID ligaId,
+            @RequestParam OffsetDateTime from,
+            @RequestParam OffsetDateTime to) {
+        return service.calendario(ligaId, from, to);
     }
 }

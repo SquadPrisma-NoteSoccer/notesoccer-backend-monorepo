@@ -6,6 +6,7 @@ import com.squadprisma.notesoccer.orchestration_service.integrations.MatchServic
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.UUID;
 
@@ -20,13 +21,9 @@ public interface MatchServiceClient {
     @PostMapping
     PartidaResponse criar(@RequestBody CreatePartidaRequest req);
 
-    @GetMapping("/{id}")
-    PartidaResponse buscarPorId(@PathVariable("id") UUID id);
-
-    @GetMapping
-    List<PartidaResponse> listar(@RequestParam(value = "ligaId", required = false) UUID ligaId,
-                                @RequestParam(value = "timeId", required = false) UUID timeId);
-
-    @PatchMapping("/{id}/status")
-    PartidaResponse alterarStatus(@PathVariable("id") UUID id, @RequestParam("status") String status);
+    @GetMapping("/calendario")
+    List<PartidaResponse> calendario(
+            @RequestParam(value = "ligaId") UUID ligaId,
+            @RequestParam(value = "from") OffsetDateTime from,
+            @RequestParam(value = "to") OffsetDateTime to);
 }
