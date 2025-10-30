@@ -24,6 +24,6 @@ public interface MatchServiceClient {
     @GetMapping("/calendario")
     List<PartidaResponse> calendario(
             @RequestParam(value = "ligaId") UUID ligaId,
-            @RequestParam(value = "from") OffsetDateTime from,
-            @RequestParam(value = "to") OffsetDateTime to);
+            @RequestParam(value = "from") String from,
+            @RequestParam(value = "to") String to);
 }

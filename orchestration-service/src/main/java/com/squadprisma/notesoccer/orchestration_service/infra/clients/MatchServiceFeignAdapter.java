@@ -31,7 +31,7 @@ public class MatchServiceFeignAdapter implements MatchServicePort {
     @Override
     public List<PartidaResponse> calendario(UUID ligaId, OffsetDateTime from, OffsetDateTime to) {
         try {
-            return client.calendario(ligaId, from, to);
+            return client.calendario(ligaId, from.toString(), to.toString());
         } catch (FeignException ex) {
             throw mapFeign(ex, "Erro ao consultar calendário");
         }
