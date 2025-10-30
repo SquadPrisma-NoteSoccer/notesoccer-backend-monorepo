@@ -8,6 +8,6 @@ import java.util.UUID;
 public record PartidaResponse(
         UUID id, UUID ligaId, UUID casaTimeId, UUID visitanteTimeId,
         OffsetDateTime startAt, OffsetDateTime endAt,
-        String local, String notas, PartidaStatus status
+        String local, String notas, OffsetDateTime createdAt, OffsetDateTime updatedAt, PartidaStatus status
 ) {
 }
