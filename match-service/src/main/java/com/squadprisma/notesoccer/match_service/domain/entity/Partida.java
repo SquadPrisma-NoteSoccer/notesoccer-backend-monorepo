@@ -39,8 +39,6 @@ public class Partida {
 
     private String notas;
 
-    private UUID createdBy;
-
     @Column(nullable = false)
     private PartidaStatus status;
 

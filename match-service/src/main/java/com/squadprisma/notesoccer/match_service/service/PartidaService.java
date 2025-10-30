@@ -1,6 +1,9 @@
 package com.squadprisma.notesoccer.match_service.service;
 
+import com.squadprisma.notesoccer.match_service.api.dto.PartidaRequest;
+import com.squadprisma.notesoccer.match_service.api.dto.PartidaResponse;
 import com.squadprisma.notesoccer.match_service.domain.entity.Partida;
+import com.squadprisma.notesoccer.match_service.domain.enums.PartidaStatus;
 import com.squadprisma.notesoccer.match_service.domain.exception.ConflictException;
 import com.squadprisma.notesoccer.match_service.repository.PartidaRepository;
 import jakarta.transaction.Transactional;
@@ -18,7 +21,21 @@ public class PartidaService {
     private final PartidaRepository repo;
 
     @Transactional
-    public Partida criar(Partida p){
+    public PartidaResponse criar(PartidaRequest req){
+
+        Partida p = Partida.builder()
+                .ligaId(req.ligaId())
+                .casaTimeId(req.casaTimeId())
+                .visitanteTimeId((req.visitanteTimeId()))
+                .startAt(req.startAt())
+                .endAt(req.endAt())
+                .local(req.local())
+                .notas(req.notas())
+                .createdAt(OffsetDateTime.now())
+                .updatedAt(OffsetDateTime.now())
+                .status(PartidaStatus.AGENDADA)
+                .build();
+
         if (p.getCasaTimeId().equals(p.getVisitanteTimeId()))
             throw new IllegalArgumentException("Times devem ser distintos");
 
@@ -26,15 +43,25 @@ public class PartidaService {
             throw new IllegalArgumentException("Horário inválido");
 
         List<Partida> conflicts = repo.findConflicts(
-                p.getLigaId(), p.getCasaTimeId(), p.getVisitanteTimeId(), p.getStartAt(), p.getEndAt());
+                p.getLigaId(), p.getCasaTimeId(), p.getVisitanteTimeId(),
+                p.getStartAt(), p.getEndAt());
 
         if (!conflicts.isEmpty())
             throw new IllegalStateException("Conflito de agenda");
 
-        return repo.save(p);
+        return toDto(repo.save(p));
     }
 
-    public List<Partida> calendario(UUID ligaId, OffsetDateTime from, OffsetDateTime to){
-        return repo.findByLigaIdAndStartAtBetween(ligaId, from, to);
+    public List<PartidaResponse> calendario(UUID ligaId, OffsetDateTime from, OffsetDateTime to){
+        return repo.findByLigaIdAndStartAtBetween(ligaId, from, to).stream().map(partida -> toDto(partida)).toList();
+    }
+
+    private PartidaResponse toDto(Partida p){
+        PartidaResponse response = new PartidaResponse(
+                p.getId(), p.getLigaId(), p.getCasaTimeId(), p.getVisitanteTimeId(),
+                p.getStartAt(), p.getEndAt(), p.getLocal(), p.getNotas(),
+                p.getCreatedAt(), p.getUpdatedAt(), p.getStatus()
+        );
+        return response;
     }
 }

@@ -2,6 +2,7 @@ package com.squadprisma.notesoccer.match_service.api.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.squadprisma.notesoccer.match_service.api.dto.PartidaRequest;
+import com.squadprisma.notesoccer.match_service.api.dto.PartidaResponse;
 import com.squadprisma.notesoccer.match_service.domain.entity.Partida;
 import com.squadprisma.notesoccer.match_service.domain.enums.PartidaStatus;
 import com.squadprisma.notesoccer.match_service.service.PartidaService;
@@ -54,7 +55,7 @@ public class PartidaControllerTest {
     @Test
     void create_returns_200_with_body() throws Exception {
         Partida saved = mockPartida();
-        Mockito.when(service.criar(any(Partida.class))).thenReturn(saved);
+        Mockito.when(service.criar(any(PartidaRequest.class))).thenReturn(toDto(saved));
 
         PartidaRequest req = new PartidaRequest(
                 saved.getLigaId(), saved.getCasaTimeId(), saved.getVisitanteTimeId(),
@@ -72,7 +73,7 @@ public class PartidaControllerTest {
 
     @Test
     void create_returns_409_on_conflict() throws Exception {
-        Mockito.when(service.criar(any(Partida.class))).thenThrow(new IllegalStateException("Conflito de agenda"));
+        Mockito.when(service.criar(any(PartidaRequest.class))).thenThrow(new IllegalStateException("Conflito de agenda"));
 
         PartidaRequest req = new PartidaRequest(
                 UUID.randomUUID(), UUID.randomUUID(), UUID.randomUUID(),
@@ -88,7 +89,7 @@ public class PartidaControllerTest {
 
     @Test
     void create_returns_400_on_business_validation() throws Exception {
-        Mockito.when(service.criar(any(Partida.class))).thenThrow(new IllegalArgumentException("Horário inválido"));
+        Mockito.when(service.criar(any(PartidaRequest.class))).thenThrow(new IllegalArgumentException("Horário inválido"));
 
         PartidaRequest req = new PartidaRequest(
                 UUID.randomUUID(), UUID.randomUUID(), UUID.randomUUID(),
@@ -105,7 +106,7 @@ public class PartidaControllerTest {
     @Test
     void calendar_returns_list() throws Exception {
         Partida p = mockPartida();
-        Mockito.when(service.calendario(any(), any(), any())).thenReturn(List.of(p));
+        Mockito.when(service.calendario(any(), any(), any())).thenReturn(List.of(toDto(p)));
 
         UUID ligaId = p.getLigaId();
         String from = "2025-07-01T00:00:00-03:00";
@@ -119,6 +120,15 @@ public class PartidaControllerTest {
                 .andExpect(jsonPath("$", hasSize(1)))
                 .andExpect(jsonPath("$[0].ligaId", is(ligaId.toString())))
                 .andExpect(jsonPath("$[0].status", is("AGENDADA")));
+    }
+
+    private PartidaResponse toDto(Partida p){
+        PartidaResponse response = new PartidaResponse(
+                p.getId(), p.getLigaId(), p.getCasaTimeId(), p.getVisitanteTimeId(),
+                p.getStartAt(), p.getEndAt(), p.getLocal(), p.getNotas(),
+                p.getCreatedAt(), p.getUpdatedAt(), p.getStatus()
+        );
+        return response;
     }
 
 
