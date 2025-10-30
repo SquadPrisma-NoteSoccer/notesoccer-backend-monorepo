@@ -9,6 +9,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.UUID;
 
@@ -16,7 +17,7 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class MatchServiceFeignAdapter implements MatchServicePort {
 
-    private MatchServiceClient client;
+    private final MatchServiceClient client;
 
     @Override
     public PartidaResponse criar(CreatePartidaRequest req) {
@@ -28,29 +29,11 @@ public class MatchServiceFeignAdapter implements MatchServicePort {
     }
 
     @Override
-    public PartidaResponse buscarPorId(UUID id) {
+    public List<PartidaResponse> calendario(UUID ligaId, OffsetDateTime from, OffsetDateTime to) {
         try {
-            return client.buscarPorId(id);
+            return client.calendario(ligaId, from, to);
         } catch (FeignException ex) {
-            throw mapFeign(ex, "Erro ao buscar partida " + id);
-        }
-    }
-
-    @Override
-    public List<PartidaResponse> listar(UUID ligaId, UUID timeId) {
-        try {
-            return client.listar(ligaId, timeId);
-        } catch (FeignException ex) {
-            throw mapFeign(ex, "Erro ao listar partidas");
-        }
-    }
-
-    @Override
-    public PartidaResponse alterarStatus(UUID id, String status) {
-        try {
-            return client.alterarStatus(id, status);
-        } catch (FeignException ex) {
-            throw mapFeign(ex, "Erro ao alterar status da partida " + id);
+            throw mapFeign(ex, "Erro ao consultar calendário");
         }
     }
 
@@ -61,7 +44,7 @@ public class MatchServiceFeignAdapter implements MatchServicePort {
             case 409 -> new ResponseStatusException(HttpStatus.CONFLICT, message);
             case 401 -> new ResponseStatusException(HttpStatus.UNAUTHORIZED, message);
             case 403 -> new ResponseStatusException(HttpStatus.FORBIDDEN, message);
-            default -> new ResponseStatusException(HttpStatus.BAD_GATEWAY, message);
+            default -> new ResponseStatusException(HttpStatus.BAD_GATEWAY, message + " (" + ex.status() + ")");
         };
     }
 }
