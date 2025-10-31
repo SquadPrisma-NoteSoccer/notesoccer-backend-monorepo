@@ -26,7 +26,7 @@ public class PartidaService {
         Partida p = Partida.builder()
                 .ligaId(req.ligaId())
                 .casaTimeId(req.casaTimeId())
-                .visitanteTimeId((req.visitanteTimeId()))
+                .visitanteTimeId(req.visitanteTimeId())
                 .startAt(req.startAt())
                 .endAt(req.endAt())
                 .local(req.local())
