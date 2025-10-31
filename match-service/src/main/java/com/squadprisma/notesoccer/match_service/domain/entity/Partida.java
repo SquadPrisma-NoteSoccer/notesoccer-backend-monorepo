@@ -39,6 +39,7 @@ public class Partida {
 
     private String notas;
 
+    @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private PartidaStatus status;
 
