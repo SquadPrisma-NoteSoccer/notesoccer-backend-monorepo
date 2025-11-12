@@ -1,6 +1,7 @@
 package com.squadprisma.notesoccer.orchestration_service.api.exceptions;
 
 import com.squadprisma.notesoccer.orchestration_service.domain.exception.ConflictException;
+import com.squadprisma.notesoccer.orchestration_service.infra.DownstreamClientException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.ConstraintViolationException;
 import org.springframework.http.HttpStatus;
@@ -13,6 +14,8 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.time.Instant;
+import java.time.OffsetDateTime;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -28,6 +31,21 @@ public class GlobalExceptionHandler {
         m.put("message", message);
         m.put("path", req.getRequestURI());
         return m;
+    }
+
+    @ExceptionHandler(DownstreamClientException.class)
+    public ResponseEntity<?> handleDownstream(DownstreamClientException ex) {
+        Map<String, Object> body = new HashMap<>();
+        body.put("timestamp", OffsetDateTime.now());
+        body.put("status", ex.getStatus().value());
+        body.put("error", ex.getStatus().getReasonPhrase());
+        body.put("code", ex.getCode());
+        body.put("message", ex.getMessage());
+        body.put("path", ex.getPath());
+        if (ex.getViolations() != null && !ex.getViolations().isEmpty()) {
+            body.put("violations", ex.getViolations());
+        }
+        return ResponseEntity.status(ex.getStatus()).body(body);
     }
 
     // 409 - conflito (ConflictException do domínio ou IllegalStateException)

@@ -1,6 +1,7 @@
 package com.squadprisma.notesoccer.orchestration_service.infra.clients;
 
 import com.squadprisma.notesoccer.orchestration_service.api.dto.*;
+import com.squadprisma.notesoccer.orchestration_service.infra.feign.FeignDownstreamConfig;
 import com.squadprisma.notesoccer.orchestration_service.integrations.LeagueServiceFeignConfig;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -13,7 +14,7 @@ import java.util.UUID;
 @FeignClient(
         name = "league-service",
         url = "${external.league-service.base-url}",
-        configuration = LeagueServiceFeignConfig.class
+        configuration = {LeagueServiceFeignConfig.class, FeignDownstreamConfig.class}
 )
 public interface LeagueServiceClient {
     @PostMapping("/api/v1/ligas")

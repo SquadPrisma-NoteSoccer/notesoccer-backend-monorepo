@@ -29,6 +29,10 @@ RUN mvn -B -U -e -DskipTests \
 # ==== Stage 2: runtime ====
 FROM eclipse-temurin:21-jre
 WORKDIR /app
+
+# Instalar curl para o healthcheck
+RUN apt-get update && apt-get install -y curl && rm -rf /var/lib/apt/lists/*
+
 COPY --from=build /repo/orchestration-service/target/*.jar /app/app.jar
 EXPOSE 8080
 ENTRYPOINT ["sh","-c","java -Dserver.port=$PORT -Dspring.profiles.active=$SPRING_PROFILES_ACTIVE -jar /app/app.jar"]
