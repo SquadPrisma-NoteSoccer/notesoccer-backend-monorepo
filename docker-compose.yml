@@ -1,0 +1,70 @@
+services:
+  user-service:
+    env_file: .env
+    build: ./user-service
+    environment:
+      SPRING_DATASOURCE_URL: "${DB_URL}&currentSchema=user_dev"
+      SPRING_DATASOURCE_USERNAME: ${DB_USER}
+      SPRING_DATASOURCE_PASSWORD: ${DB_PASS}
+    expose: ["8081"]
+    healthcheck:
+      test: ["CMD", "curl", "-fsS", "http://localhost:8081/actuator/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 15
+
+  league-service:
+    env_file: .env
+    build: ./league-service
+    environment:
+      SPRING_DATASOURCE_URL: "${DB_URL}&currentSchema=league_dev"
+      SPRING_DATASOURCE_USERNAME: ${DB_USER}
+      SPRING_DATASOURCE_PASSWORD: ${DB_PASS}
+    expose: ["8082"]
+    healthcheck:
+      test: ["CMD", "curl", "-fsS", "http://localhost:8082/actuator/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 15
+
+  match-service:
+    env_file: .env
+    build: ./match-service
+    environment:
+      SPRING_DATASOURCE_URL: "${DB_URL}&currentSchema=match_dev"
+      SPRING_DATASOURCE_USERNAME: ${DB_USER}
+      SPRING_DATASOURCE_PASSWORD: ${DB_PASS}
+    expose: ["8083"]
+    healthcheck:
+      test: [ "CMD", "curl", "-fsS", "http://localhost:8083/actuator/health" ]
+      interval: 10s
+      timeout: 5s
+      retries: 15
+
+  orchestration-service:
+    env_file: .env
+    build:
+      context: .
+      dockerfile: orchestration-service/Dockerfile
+    depends_on:
+      user-service: {condition: service_healthy}
+      league-service: {condition: service_healthy}
+      match-service: {condition: service_healthy}
+    environment:
+      SPRING_APPLICATION_JSON: |
+        {
+          "USER_SERVICE_BASE_URL": "http://user-service:8081",
+          "LEAGUE_SERVICE_BASE_URL": "http://league-service:8082",
+          "MATCH_SERVICE_BASE_URL": "http://match-service:8083",
+          "spring.profiles.active": "dev"
+        }
+      SPRING_DATASOURCE_URL: "${DB_URL}&currentSchema=orchestration_dev"
+      SPRING_DATASOURCE_USERNAME: ${DB_USER}
+      SPRING_DATASOURCE_PASSWORD: ${DB_PASS}
+    ports:
+      - "8080:8080"  # única porta publicada para fora
+    healthcheck:
+      test: [ "CMD", "curl", "-fsS", "http://localhost:8080/actuator/health" ]
+      interval: 10s
+      timeout: 5s
+      retries: 15
