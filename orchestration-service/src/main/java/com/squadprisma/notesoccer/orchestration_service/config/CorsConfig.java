@@ -43,7 +43,8 @@ public class CorsConfig {
         cfg.setAllowedOriginPatterns(List.of(
                 "http://localhost:*",
                 "https://*.netlify.app",
-                "https://*.trycloudflare.com" // <<< corrigido!
+                "https://*.trycloudflare.com", // <<< corrigido!
+                "http://*.trycloudflare.com"
         ));
         cfg.setAllowedMethods(List.of("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
         cfg.setAllowedHeaders(List.of("*"));
