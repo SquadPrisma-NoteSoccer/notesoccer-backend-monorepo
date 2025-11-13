@@ -17,7 +17,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 
 @ExtendWith(SpringExtension.class)
-@ActiveProfiles("test")
+@ActiveProfiles("teste")
 @ContextConfiguration(classes = OrchestrationServiceApplicationTests.MinimalTestConfig.class)
 class OrchestrationServiceApplicationTests {
 
