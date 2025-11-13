@@ -1,0 +1,27 @@
+name: CI (PR - Backend)
+
+on:
+  pull_request:
+    branches: [ develop ]
+    paths:
+      - "**/*.java"
+      - "pom.xml"
+      - ".github/workflows/**"
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          java-version: '21'   # ou a versão que você estiver usando
+          distribution: 'temurin'
+          cache: 'maven'
+
+      - name: Build & Test
+        run: mvn -B verify
