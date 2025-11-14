@@ -44,7 +44,9 @@ public class CorsConfig {
                 "http://localhost:*",
                 "https://*.netlify.app",
                 "https://*.trycloudflare.com", // <<< corrigido!
-                "http://*.trycloudflare.com"
+                "http://*.trycloudflare.com",
+                "http://notesoccer.lavicestas.com.br",
+                "https://notesoccer.lavicestas.com.br"
         ));
         cfg.setAllowedMethods(List.of("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
         cfg.setAllowedHeaders(List.of("*"));
