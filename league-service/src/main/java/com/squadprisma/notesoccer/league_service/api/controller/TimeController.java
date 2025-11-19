@@ -2,6 +2,7 @@ package com.squadprisma.notesoccer.league_service.api.controller;
 
 import com.squadprisma.notesoccer.league_service.api.dto.TimeCountResponse;
 import com.squadprisma.notesoccer.league_service.api.dto.TimeCreateRequest;
+import com.squadprisma.notesoccer.league_service.api.dto.TimeLoteCreateRequest;
 import com.squadprisma.notesoccer.league_service.api.dto.TimeResponse;
 import com.squadprisma.notesoccer.league_service.domain.entity.Time;
 import com.squadprisma.notesoccer.league_service.service.TimeService;
@@ -16,6 +17,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.UUID;
 
 @RestController
@@ -32,6 +34,25 @@ public class TimeController {
         Time t = service.create(body);
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(new TimeResponse(t.getId(), t.getLiga().getId(), t.getNome(), t.getCreatedAt()));
+    }
+
+    @PostMapping("/lote/{ligaId}")
+    @Operation(summary = "Adiciona vários times à liga (lote)")
+    public ResponseEntity<List<TimeResponse>> createLote(
+            @PathVariable UUID ligaId,
+            @Valid @RequestBody List<TimeLoteCreateRequest> body
+    ) {
+        List<Time> times = service.createLote(ligaId, body);
+
+        List<TimeResponse> response = times.stream()
+                .map(t -> new TimeResponse(
+                        t.getId(),
+                        t.getLiga().getId(),
+                        t.getNome(),
+                        t.getCreatedAt()
+                )).toList();
+
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
     @GetMapping
