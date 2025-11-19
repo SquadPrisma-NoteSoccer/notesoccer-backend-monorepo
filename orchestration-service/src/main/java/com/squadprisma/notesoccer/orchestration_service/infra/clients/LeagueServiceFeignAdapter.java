@@ -5,6 +5,7 @@ import com.squadprisma.notesoccer.orchestration_service.application.port.out.Lea
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
 import java.util.UUID;
 
 @Component
@@ -21,6 +22,11 @@ public class LeagueServiceFeignAdapter implements LeagueServicePort {
     @Override
     public TimeResponse criarTime(CreateTimeRequest request) {
         return client.criarTime(request);
+    }
+
+    @Override
+    public List<TimeResponse> criarTimesLote(UUID ligaId, List<CreateTimeLoteRequest> request) {
+        return client.criarTimesLote(ligaId, request);
     }
 
     @Override

@@ -10,6 +10,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.UUID;
 
 @Tag(name = "Ligas")
@@ -33,6 +34,16 @@ public class OrchestrationLigaController {
             @PathVariable UUID ligaId,
             @Valid @RequestBody CreateTimeRequest body) {
         var resp = service.criarTime(ligaId, body.nome()); // força o path como fonte da liga
+        return ResponseEntity.status(HttpStatus.CREATED).body(resp);
+    }
+
+    @PostMapping("/{ligaId}/times/lote")
+    @Operation(summary = "Criar vários times em uma liga (lote)")
+    public ResponseEntity<List<TimeResponse>> criarTimesLote(
+            @PathVariable UUID ligaId,
+            @Valid @RequestBody List<CreateTimeLoteRequest> body) {
+
+        var resp = service.criarTimesLote(ligaId, body);
         return ResponseEntity.status(HttpStatus.CREATED).body(resp);
     }
 
