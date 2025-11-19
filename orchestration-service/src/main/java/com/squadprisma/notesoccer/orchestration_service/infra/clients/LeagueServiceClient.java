@@ -4,11 +4,9 @@ import com.squadprisma.notesoccer.orchestration_service.api.dto.*;
 import com.squadprisma.notesoccer.orchestration_service.infra.feign.FeignDownstreamConfig;
 import com.squadprisma.notesoccer.orchestration_service.integrations.LeagueServiceFeignConfig;
 import org.springframework.cloud.openfeign.FeignClient;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.UUID;
 
 @FeignClient(
@@ -22,6 +20,12 @@ public interface LeagueServiceClient {
 
     @PostMapping("/api/v1/times")
     TimeResponse criarTime(@RequestBody CreateTimeRequest body);
+
+    @PostMapping("/api/v1/times/lote/{ligaId}")
+    List<TimeResponse> criarTimesLote(
+            @PathVariable("ligaId") UUID ligaId,
+            @RequestBody List<CreateTimeLoteRequest> body
+    );
 
     @GetMapping("/api/v1/times")
     PageResponse<TimeResponse> listarTimes(

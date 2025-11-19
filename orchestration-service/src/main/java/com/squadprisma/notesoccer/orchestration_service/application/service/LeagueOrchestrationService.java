@@ -9,6 +9,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.util.List;
 import java.util.UUID;
 
 /**
@@ -39,6 +40,19 @@ public class LeagueOrchestrationService {
             var req = new CreateTimeRequest(ligaId, nome);
             return port.criarTime(req);
         } catch (FeignException.Conflict ex) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT, ex.contentUTF8());
+        } catch (RetryableException ex) {
+            throw new ResponseStatusException(HttpStatus.GATEWAY_TIMEOUT, "league-service timeout");
+        } catch (FeignException ex) {
+            throw new ResponseStatusException(HttpStatus.BAD_GATEWAY, "league-service error: " + ex.status());
+        }
+    }
+
+    public List<TimeResponse> criarTimesLote(UUID ligaId, List<CreateTimeLoteRequest> reqs) {
+        try {
+            return port.criarTimesLote(ligaId, reqs);
+        } catch (FeignException.Conflict ex) {
+            // aqui virão erros como TEAM_ALREADY_EXISTS, TEAM_LIMIT_REACHED, etc.
             throw new ResponseStatusException(HttpStatus.CONFLICT, ex.contentUTF8());
         } catch (RetryableException ex) {
             throw new ResponseStatusException(HttpStatus.GATEWAY_TIMEOUT, "league-service timeout");
