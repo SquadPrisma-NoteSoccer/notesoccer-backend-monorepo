@@ -10,6 +10,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -24,6 +25,7 @@ import java.util.UUID;
 @RequestMapping(value = "/api/v1/orquestrador/partidas", produces = "application/json")
 @RequiredArgsConstructor
 @Tag(name = "Partidas", description = "Orchestrator → Match Service")
+@Slf4j
 public class OrchestrationPartidaController {
 
     private final MatchOrchestrationService service;
@@ -38,12 +40,19 @@ public class OrchestrationPartidaController {
     })
     @PostMapping(consumes = "application/json")
     public ResponseEntity<PartidaResponse> criar(@Valid @RequestBody CreatePartidaRequest req){
+        log.info("Orchestrator - Criar partida. ligaId={}, mandanteId={}, visitanteId={}, dataHoraInicio={}",
+                req.ligaId(), req.casaTimeId(), req.visitanteTimeId(), req.startAt());
+
         PartidaResponse resp = service.criar(req);
         var location = ServletUriComponentsBuilder
                 .fromCurrentRequest()
                 .path("/{id}")
                 .buildAndExpand(resp.id())
                 .toUri();
+
+        log.info("Orchestrator - Partida criada com sucesso. partidaId={}, ligaId={}",
+                resp.id(), resp.ligaId());
+
         return ResponseEntity.created(location).body(resp);
     }
 
@@ -53,6 +62,14 @@ public class OrchestrationPartidaController {
             @RequestParam UUID ligaId,
             @RequestParam OffsetDateTime from,
             @RequestParam OffsetDateTime to) {
-        return service.calendario(ligaId, from, to);
+        log.info("Orchestrator - Consultar calendário de partidas. ligaId={}, from={}, to={}",
+                ligaId, from, to);
+
+        var resp = service.calendario(ligaId, from, to);
+
+        log.debug("Orchestrator - Calendário retornado. ligaId={}, quantidadePartidas={}",
+                ligaId, resp.size());
+
+        return resp;
     }
 }
