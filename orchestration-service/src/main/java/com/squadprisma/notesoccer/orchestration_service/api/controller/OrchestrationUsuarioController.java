@@ -18,7 +18,6 @@ import org.springframework.web.bind.annotation.RestController;
 @Tag(name = "Usuarios")
 @RestController
 @RequestMapping("/api/v1/orquestrador/usuarios")
-@RequiredArgsConstructor
 @Slf4j
 public class OrchestrationUsuarioController {
 
