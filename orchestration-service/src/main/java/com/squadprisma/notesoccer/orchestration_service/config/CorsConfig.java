@@ -46,7 +46,8 @@ public class CorsConfig {
                 "https://*.trycloudflare.com", // <<< corrigido!
                 "http://*.trycloudflare.com",
                 "http://notesoccer.lavicestas.com.br",
-                "https://notesoccer.lavicestas.com.br"
+                "https://notesoccer.lavicestas.com.br",
+                "https://orchestration-service-dev.onrender.com"
         ));
         cfg.setAllowedMethods(List.of("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
         cfg.setAllowedHeaders(List.of("*"));
