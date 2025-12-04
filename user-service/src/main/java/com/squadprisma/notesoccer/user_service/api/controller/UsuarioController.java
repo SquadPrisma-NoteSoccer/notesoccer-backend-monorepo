@@ -15,18 +15,21 @@ import org.springframework.web.bind.annotation.*;
 public class UsuarioController {
 
    private final UsuarioService service;
-   private final UsuarioRepository repository;
 
-    public UsuarioController(UsuarioService service, UsuarioRepository repository) {
+    public UsuarioController(UsuarioService service) {
         this.service = service;
-        this.repository = repository;
     }
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public CadastroUsuarioResponse criar(@RequestBody @Valid CadastroUsuarioDTO dto) {
         Usuario salvo = service.criar(dto);
-        return new CadastroUsuarioResponse(salvo.getId(), salvo.getNome(), salvo.getEmail(),
-                salvo.getApelido(), salvo.getWhatsappE164());
+        return new CadastroUsuarioResponse(
+                salvo.getId(),
+                salvo.getNome(),
+                salvo.getEmail(),
+                salvo.getApelido(),
+                salvo.getWhatsappE164()
+        );
     }
 }

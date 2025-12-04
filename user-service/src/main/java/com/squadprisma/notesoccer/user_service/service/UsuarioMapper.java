@@ -16,8 +16,7 @@ public class UsuarioMapper {
     public Usuario toEntity(CadastroUsuarioDTO dto) {
         return Usuario.builder()
                 .nome(dto.nome().trim())
-                .email(dto.email().trim().toLowerCase())
-                .senhaHash(encoder.encode(dto.senha()))
+                .email(dto.email())
                 .apelido(dto.apelido() == null ? null : dto.apelido().trim())
                 .whatsappE164(normalizeE164(dto.whatsapp()))
                 .build();

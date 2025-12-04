@@ -1,5 +1,6 @@
 package com.squadprisma.notesoccer.user_service.domain.entity;
 
+import com.squadprisma.notesoccer.user_service.domain.enums.Role;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -34,4 +35,8 @@ public class Usuario {
 
     @Column(length = 20)
     private String whatsappE164;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false, length = 30)
+    private Role role;
 }
