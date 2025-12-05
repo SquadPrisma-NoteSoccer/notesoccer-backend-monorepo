@@ -15,6 +15,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+// MATAR CONTROLLE APÓS INPLANTAÇÃO DO DA AUTENTICAÇÃO PELO FRONT
+
 @Tag(name = "Usuarios")
 @RestController
 @RequestMapping("/api/v1/orquestrador/usuarios")
