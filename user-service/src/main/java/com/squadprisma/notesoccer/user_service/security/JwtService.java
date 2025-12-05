@@ -1,4 +1,4 @@
-package com.squadprisma.notesoccer.user_service.domain.service;
+package com.squadprisma.notesoccer.user_service.security;
 
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;

@@ -1,4 +1,4 @@
-package com.squadprisma.notesoccer.orchestration_service.api.sagaController;
+package com.squadprisma.notesoccer.orchestration_service.api.controller;
 
 import com.squadprisma.notesoccer.orchestration_service.api.dto.SagaStatusResponse;
 import com.squadprisma.notesoccer.orchestration_service.api.dto.StartSagaRequest;
@@ -10,7 +10,7 @@ import java.util.UUID;
 
 //@Tag(name = "Sagas")
 @RestController
-@RequestMapping("/api/v1/sagas")
+@RequestMapping("/sagas")
 public class SagaStatusController {
 
     private final SagaManager manager;
