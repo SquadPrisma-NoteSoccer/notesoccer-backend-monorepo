@@ -11,6 +11,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -20,6 +21,7 @@ import org.springframework.web.bind.annotation.RestController;
 @Tag(name = "Auth", description = "Orchestrator → User Service Auth")
 @RestController
 @RequestMapping("/api/v1/auth")
+@Slf4j
 public class OrchestrationAuthController {
 
     private final UserAuthClient userAuthClient;
@@ -40,8 +42,11 @@ public class OrchestrationAuthController {
     })
     @PostMapping("/login")
     public ResponseEntity<LoginResponse> login(@RequestBody @Valid LoginRequest request) {
-        LoginResponse response = userAuthClient.login(request);
-        return ResponseEntity.ok(response);
+        log.info("Orchestrator - Efetuar Login do Usuário email={}", request.email());
+        var loggedIn = userAuthClient.login(request);
+        log.info("Orchestrator - Login efetuado com sucesso. usuarioId={}, email={}",
+                loggedIn.userId(), loggedIn.email());
+        return ResponseEntity.ok(loggedIn);
     }
 
     @Operation(
@@ -56,7 +61,10 @@ public class OrchestrationAuthController {
     })
     @PostMapping("/signup")
     public ResponseEntity<LoginResponse> signup(@RequestBody @Valid CadastroUsuarioRequest request) {
-        LoginResponse response = userAuthClient.signup(request);
-        return ResponseEntity.status(201).body(response);
+        log.info("Orchestrator - Criar usuário autenticado. email={}, apelido={}", request.email(), request.apelido());
+        var created = userAuthClient.signup(request);
+        log.info("Orchestrator - Usuário criado com sucesso. usuarioId={}, email={}",
+                created.userId(), created.email());
+        return ResponseEntity.status(201).body(created);
     }
 }
