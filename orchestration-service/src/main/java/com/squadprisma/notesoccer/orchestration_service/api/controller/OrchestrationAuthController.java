@@ -3,7 +3,7 @@ package com.squadprisma.notesoccer.orchestration_service.api.controller;
 import com.squadprisma.notesoccer.orchestration_service.api.dto.CadastroUsuarioRequest;
 import com.squadprisma.notesoccer.orchestration_service.api.dto.LoginRequest;
 import com.squadprisma.notesoccer.orchestration_service.api.dto.LoginResponse;
-import com.squadprisma.notesoccer.orchestration_service.infra.clients.UserAuthClient;
+import com.squadprisma.notesoccer.orchestration_service.application.service.UserAuthOrchestrationService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -11,6 +11,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -22,13 +23,10 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/api/v1/auth")
 @Slf4j
+@RequiredArgsConstructor
 public class OrchestrationAuthController {
 
-    private final UserAuthClient userAuthClient;
-
-    public OrchestrationAuthController(UserAuthClient userAuthClient) {
-        this.userAuthClient = userAuthClient;
-    }
+    private final UserAuthOrchestrationService service;
 
     @Operation(
             summary = "Login via gateway",
@@ -43,7 +41,7 @@ public class OrchestrationAuthController {
     @PostMapping("/login")
     public ResponseEntity<LoginResponse> login(@RequestBody @Valid LoginRequest request) {
         log.info("Orchestrator - Efetuar Login do Usuário email={}", request.email());
-        var loggedIn = userAuthClient.login(request);
+        var loggedIn = service.login(request);
         log.info("Orchestrator - Login efetuado com sucesso. usuarioId={}, email={}",
                 loggedIn.userId(), loggedIn.email());
         return ResponseEntity.ok(loggedIn);
@@ -62,7 +60,7 @@ public class OrchestrationAuthController {
     @PostMapping("/signup")
     public ResponseEntity<LoginResponse> signup(@RequestBody @Valid CadastroUsuarioRequest request) {
         log.info("Orchestrator - Criar usuário autenticado. email={}, apelido={}", request.email(), request.apelido());
-        var created = userAuthClient.signup(request);
+        var created = service.signup(request);
         log.info("Orchestrator - Usuário criado com sucesso. usuarioId={}, email={}",
                 created.userId(), created.email());
         return ResponseEntity.status(201).body(created);
