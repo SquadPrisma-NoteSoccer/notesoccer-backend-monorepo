@@ -22,13 +22,14 @@ public class CorsConfig {
             public void addCorsMappings(CorsRegistry registry){
                 registry.addMapping("/api/**")
                         .allowedOriginPatterns(
-                                "http://localhost:*",
+                                "http://localhost:4200",
                                 "https://*.netlify.app",
-                                "https://*.trycloudflare.com"
+                                "https://*.trycloudflare.com",
+                                "https://notesoccer.lavivestas.com.br"
                         )
                         .allowedMethods("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS")
                         .allowedHeaders("*")
-                        .exposedHeaders("Location")
+                        .exposedHeaders("Location", "Authorization")
                         .allowCredentials(true)
                         .maxAge(3600);
             }
@@ -41,17 +42,16 @@ public class CorsConfig {
     public CorsFilter corsFilter() {
         CorsConfiguration cfg = new CorsConfiguration();
         cfg.setAllowedOriginPatterns(List.of(
-                "http://localhost:*",
+                "http://localhost:4200",
                 "https://*.netlify.app",
-                "https://*.trycloudflare.com", // <<< corrigido!
-                "http://*.trycloudflare.com",
+                "https://*.trycloudflare.com",
                 "http://notesoccer.lavicestas.com.br",
                 "https://notesoccer.lavicestas.com.br",
                 "https://orchestration-service-dev.onrender.com"
         ));
         cfg.setAllowedMethods(List.of("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
         cfg.setAllowedHeaders(List.of("*"));
-        cfg.setExposedHeaders(List.of("Location"));
+        cfg.setExposedHeaders(List.of("Location", "Authorization"));
         cfg.setAllowCredentials(true);
         cfg.setMaxAge(3600L);
 
