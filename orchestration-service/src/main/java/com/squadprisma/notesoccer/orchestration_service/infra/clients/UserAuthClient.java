@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 public interface UserAuthClient {
 
     @PostMapping("/api/v1/auth/login")
-    LoginResponse login(LoginRequest request);
+    LoginResponse login(@RequestBody LoginRequest request);
 
     @PostMapping("/api/v1/auth/signup")
     LoginResponse signup(@RequestBody CadastroUsuarioRequest request);

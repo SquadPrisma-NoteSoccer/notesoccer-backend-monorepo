@@ -21,13 +21,10 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/api/v1/orquestrador/usuarios")
 @Slf4j
+@RequiredArgsConstructor
 public class OrchestrationUsuarioController {
 
     private final UserOrchestrationService service;
-
-    public OrchestrationUsuarioController(UserOrchestrationService service) {
-        this.service = service;
-    }
 
     @Operation(summary = "Cadastra um usuário")
     @PostMapping
