@@ -9,6 +9,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -45,6 +47,13 @@ public class LigaController {
         var p = service.listarPorUsuario(userId, PageRequest.of(page, size))
                 .map(LigaController::toResponse);
         return new PageImpl<>(p.getContent(), p.getPageable(), p.getTotalElements());
+    }
+
+    @DeleteMapping("/{ligaId}")
+    @Operation(summary = "Excluir liga")
+    public ResponseEntity<Void> delete(@PathVariable UUID ligaId) {
+        service.delete(ligaId);
+        return ResponseEntity.noContent().build();
     }
 
      private static LigaResponse toResponse(Liga l) {

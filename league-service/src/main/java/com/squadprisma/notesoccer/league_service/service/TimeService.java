@@ -113,4 +113,14 @@ public class TimeService {
                 .orElseThrow(() -> new NotFoundException("LEAGUE_NOT_FOUND"));
         return timeRepo.countByLiga(liga);
     }
+
+    public void delete(UUID ligaId, UUID timeId){
+        Time time = timeRepo.findById(timeId)
+                .orElseThrow(() -> new NotFoundException("TEAM_NOT_FOUND"));
+
+        if (!time.getLiga().getId().equals(ligaId)){
+            throw new BadRequestException("TEAM_NOT_IN_LEAGUE");
+        }
+        timeRepo.delete(time);
+    }
 }

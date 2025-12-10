@@ -106,6 +106,50 @@ public class TimeServiceTest {
         verify(timeRepo, never()).save(any());
     }
 
+    @Test
+    void delete_ok() {
+        UUID timeId = UUID.randomUUID();
+
+        Time t = new Time();
+        t.setId(timeId);
+        t.setLiga(liga);
+
+        when(timeRepo.findById(timeId)).thenReturn(Optional.of(t));
+
+        service.delete(LIGA_ID, timeId);
+
+        verify(timeRepo, times(1)).delete(t);
+    }
+
+    @Test
+    void delete_time_nao_encontrado() {
+        UUID timeId = UUID.randomUUID();
+
+        when(timeRepo.findById(timeId)).thenReturn(Optional.empty());
+
+        assertThatThrownBy(() -> service.delete(LIGA_ID, timeId))
+                .isInstanceOf(NotFoundException.class)
+                .hasMessage("TEAM_NOT_FOUND");
+    }
+
+    @Test
+    void delete_time_nao_pertence_a_liga() {
+        UUID timeId = UUID.randomUUID();
+
+        Liga outraLiga = new Liga();
+        outraLiga.setId(UUID.randomUUID());
+
+        Time t = new Time();
+        t.setId(timeId);
+        t.setLiga(outraLiga);
+
+        when(timeRepo.findById(timeId)).thenReturn(Optional.of(t));
+
+        assertThatThrownBy(() -> service.delete(LIGA_ID, timeId))
+                .isInstanceOf(BadRequestException.class)
+                .hasMessage("TEAM_NOT_IN_LEAGUE");
+    }
+
     @ParameterizedTest
     @ValueSource(strings = {"", "   "})
     void create_nome_em_branco(String name) {
