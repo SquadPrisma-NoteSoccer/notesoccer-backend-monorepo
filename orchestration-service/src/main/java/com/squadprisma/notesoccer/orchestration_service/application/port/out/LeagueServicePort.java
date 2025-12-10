@@ -11,7 +11,7 @@ public interface LeagueServicePort {
     List<TimeResponse> criarTimesLote(UUID ligaId, List<CreateTimeLoteRequest> request);
     PageResponse<TimeResponse> listarTimes(UUID ligaId, int page, int size);
     TimeCountResponse contarTimes(UUID ligaId);
-    void deletarTime(UUID ligaId, UUID timeId);
+    void deletarTime(UUID timeId, UUID ligaId);
     void deletarLiga(UUID ligaId);
     PageResponse<LigaResponse> listarLigasPorUsuario(UUID userId, int page, int size);
 }

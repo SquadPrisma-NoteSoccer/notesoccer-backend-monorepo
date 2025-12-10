@@ -4,6 +4,7 @@ import com.squadprisma.notesoccer.league_service.api.dto.LigaCreateRequest;
 import com.squadprisma.notesoccer.league_service.domain.entity.Liga;
 import com.squadprisma.notesoccer.league_service.domain.exception.NotFoundException;
 import com.squadprisma.notesoccer.league_service.repository.LigaRepository;
+import com.squadprisma.notesoccer.league_service.repository.TimeRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -17,6 +18,7 @@ import java.util.UUID;
 public class LigaService {
 
     private final LigaRepository repo;
+    private final TimeRepository timeRepo;
 
     @Transactional
     public Liga criar(LigaCreateRequest req) {
@@ -33,12 +35,11 @@ public class LigaService {
 
     @Transactional
     public void delete(UUID ligaId){
-        boolean exists = repo.existsById(ligaId);
+        Liga liga = repo.findById(ligaId)
+                .orElseThrow(() -> new NotFoundException("LEAGUE_NOT_FOUND"));
 
-        if (!exists){
-            throw new NotFoundException("LEAGUE_NOT_FOUND");
-        }
+        timeRepo.deleteByLiga(liga);
 
-        repo.deleteByLigaId(ligaId);
+        repo.delete(liga);
     }
 }

@@ -9,5 +9,4 @@ import java.util.UUID;
 
 public interface LigaRepository extends JpaRepository<Liga, UUID> {
     Page<Liga> findByUserId(UUID userId, Pageable pageable);
-    void deleteByLigaId(UUID ligaId);
 }

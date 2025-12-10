@@ -200,79 +200,106 @@ public class LeagueOrchestrationServiceTest {
 
     @Test
     void deletarTime_deveDelegarParaPorta_eNaoLancarErro() {
+        UUID ligaId = UUID.randomUUID();
         UUID timeId = UUID.randomUUID();
-        doNothing().when(port).deletarTime(ligaId, timeId);
 
+        // não precisa stubar doNothing: por padrão o mock não faz nada
         service.deletarTime(ligaId, timeId);
 
-        verify(port).deletarTime(ligaId, timeId);
-        verifyNoMoreInteractions(port);
-    }
-
-    @Test
-    void deletarTime_deveMapear404ParaResponseStatusExceptionNotFound() {
-        UUID timeId = UUID.randomUUID();
-        FeignException.NotFound notFound = mock(FeignException.NotFound.class);
-        when(notFound.contentUTF8()).thenReturn("TEAM_NOT_FOUND");
-
-        doThrow(notFound).when(port).deletarTime(ligaId, timeId);
-
-        ResponseStatusException ex = assertThrows(ResponseStatusException.class,
-                () -> service.deletarTime(ligaId, timeId));
-
-        assertThat(ex.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
-        assertThat(ex.getReason()).isEqualTo("TEAM_NOT_FOUND");
-        verify(port).deletarTime(ligaId, timeId);
-        verifyNoMoreInteractions(port);
-    }
-
-    @Test
-    void deletarTime_deveMapear409ParaResponseStatusExceptionConflict() {
-        UUID timeId = UUID.randomUUID();
-        FeignException.Conflict conflict = mock(FeignException.Conflict.class);
-        when(conflict.contentUTF8()).thenReturn("TEAM_IN_USE");
-
-        doThrow(conflict).when(port).deletarTime(ligaId, timeId);
-
-        ResponseStatusException ex = assertThrows(ResponseStatusException.class,
-                () -> service.deletarTime(ligaId, timeId));
-
-        assertThat(ex.getStatusCode()).isEqualTo(HttpStatus.CONFLICT);
-        assertThat(ex.getReason()).isEqualTo("TEAM_IN_USE");
-        verify(port).deletarTime(ligaId, timeId);
+        // ✅ verifica que chamou com (timeId, ligaId) – ordem da PORTA
+        verify(port).deletarTime(timeId, ligaId);
         verifyNoMoreInteractions(port);
     }
 
     @Test
     void deletarTime_deveMapearRetryableExceptionPara504() {
+        UUID ligaId = UUID.randomUUID();
         UUID timeId = UUID.randomUUID();
+
         RetryableException retryable = mock(RetryableException.class);
 
-        doThrow(retryable).when(port).deletarTime(ligaId, timeId);
+        // void => usa doThrow, com any() pra não dar mismatch de argumentos
+        doThrow(retryable)
+                .when(port)
+                .deletarTime(any(UUID.class), any(UUID.class));
 
-        ResponseStatusException ex = assertThrows(ResponseStatusException.class,
-                () -> service.deletarTime(ligaId, timeId));
+        ResponseStatusException ex = assertThrows(
+                ResponseStatusException.class,
+                () -> service.deletarTime(ligaId, timeId)
+        );
 
         assertThat(ex.getStatusCode()).isEqualTo(HttpStatus.GATEWAY_TIMEOUT);
         assertThat(ex.getReason()).isEqualTo("league-service timeout");
-        verify(port).deletarTime(ligaId, timeId);
+        verify(port).deletarTime(timeId, ligaId);
+        verifyNoMoreInteractions(port);
+    }
+
+    @Test
+    void deletarTime_deveMapear404ParaResponseStatusExceptionNotFound() {
+        UUID ligaId = UUID.randomUUID();
+        UUID timeId = UUID.randomUUID();
+
+        FeignException.NotFound notFound = mock(FeignException.NotFound.class);
+        when(notFound.contentUTF8()).thenReturn("TEAM_NOT_FOUND");
+
+        doThrow(notFound)
+                .when(port)
+                .deletarTime(any(UUID.class), any(UUID.class));
+
+        ResponseStatusException ex = assertThrows(
+                ResponseStatusException.class,
+                () -> service.deletarTime(ligaId, timeId)
+        );
+
+        assertThat(ex.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
+        assertThat(ex.getReason()).isEqualTo("TEAM_NOT_FOUND");
+        verify(port).deletarTime(timeId, ligaId);
+        verifyNoMoreInteractions(port);
+    }
+
+    @Test
+    void deletarTime_deveMapear409ParaResponseStatusExceptionConflict() {
+        UUID ligaId = UUID.randomUUID();
+        UUID timeId = UUID.randomUUID();
+
+        FeignException.Conflict conflict = mock(FeignException.Conflict.class);
+        when(conflict.contentUTF8()).thenReturn("TEAM_NOT_IN_LEAGUE");
+
+        doThrow(conflict)
+                .when(port)
+                .deletarTime(any(UUID.class), any(UUID.class));
+
+        ResponseStatusException ex = assertThrows(
+                ResponseStatusException.class,
+                () -> service.deletarTime(ligaId, timeId)
+        );
+
+        assertThat(ex.getStatusCode()).isEqualTo(HttpStatus.CONFLICT);
+        assertThat(ex.getReason()).isEqualTo("TEAM_NOT_IN_LEAGUE");
+        verify(port).deletarTime(timeId, ligaId);
         verifyNoMoreInteractions(port);
     }
 
     @Test
     void deletarTime_deveMapearFeignGenericoPara502() {
+        UUID ligaId = UUID.randomUUID();
         UUID timeId = UUID.randomUUID();
+
         FeignException generic = mock(FeignException.class);
-        when(generic.status()).thenReturn(500);
+        when(generic.status()).thenReturn(503);
 
-        doThrow(generic).when(port).deletarTime(ligaId, timeId);
+        doThrow(generic)
+                .when(port)
+                .deletarTime(any(UUID.class), any(UUID.class));
 
-        ResponseStatusException ex = assertThrows(ResponseStatusException.class,
-                () -> service.deletarTime(ligaId, timeId));
+        ResponseStatusException ex = assertThrows(
+                ResponseStatusException.class,
+                () -> service.deletarTime(ligaId, timeId)
+        );
 
         assertThat(ex.getStatusCode()).isEqualTo(HttpStatus.BAD_GATEWAY);
-        assertThat(ex.getReason()).isEqualTo("league-service error: 500");
-        verify(port).deletarTime(ligaId, timeId);
+        assertThat(ex.getReason()).isEqualTo("league-service error: 503");
+        verify(port).deletarTime(timeId, ligaId);
         verifyNoMoreInteractions(port);
     }
 
