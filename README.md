@@ -74,7 +74,7 @@ Esse comando irá:
 - Conectar ao banco do Supabase
 - Iniciar automaticamente as dependências internas
 
-### Parar
+### ⏹️ Parar
 ```bash
 docker compose down
 ```
@@ -106,7 +106,7 @@ docker compose down
 - Orchestration Service em bootstrap
 - Integração Backend ↔ Frontend funcionando (cadastro, ligas, times)
 
-### Em anndamento
+### Em andamento
 - Partidas
 - Flyer Service
 - Notificações
