@@ -103,4 +103,62 @@ public class LeagueOrchestrationService {
                 ligaId, resp.count());
         return resp;
     }
+
+    public void deletarTime(UUID ligaId, UUID timeId) {
+        log.info("[ORC-LEAGUE] Iniciando exclusão de time. ligaId={}, timeId={}", ligaId, timeId);
+        try {
+            port.deletarTime(ligaId, timeId);
+            log.info("[ORC-LEAGUE] Time excluído com sucesso no league-service. ligaId={}, timeId={}", ligaId, timeId);
+        } catch (FeignException.NotFound ex) {
+            log.warn("[ORC-LEAGUE] Time não encontrado ao tentar excluir. ligaId={}, timeId={}, detalhe={}",
+                    ligaId, timeId, ex.contentUTF8());
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, ex.contentUTF8());
+        } catch (FeignException.Conflict ex) {
+            log.warn("[ORC-LEAGUE] Conflito ao excluir time. ligaId={}, timeId={}, detalhe={}",
+                    ligaId, timeId, ex.contentUTF8());
+            throw new ResponseStatusException(HttpStatus.CONFLICT, ex.contentUTF8());
+        } catch (RetryableException ex) {
+            log.error("[ORC-LEAGUE] Timeout ao chamar league-service na exclusão de time. ligaId={}, timeId={}",
+                    ligaId, timeId, ex);
+            throw new ResponseStatusException(HttpStatus.GATEWAY_TIMEOUT, "league-service timeout");
+        } catch (FeignException ex) {
+            log.error("[ORC-LEAGUE] Erro genérico do league-service ao excluir time. ligaId={}, timeId={}, status={}",
+                    ligaId, timeId, ex.status(), ex);
+            throw new ResponseStatusException(HttpStatus.BAD_GATEWAY, "league-service error: " + ex.status());
+        }
+    }
+
+    public void deletarLiga(UUID ligaId) {
+        log.info("[ORC-LEAGUE] Iniciando exclusão de liga. ligaId={}", ligaId);
+        try {
+            port.deletarLiga(ligaId);
+            log.info("[ORC-LEAGUE] Liga excluída com sucesso no league-service. ligaId={}", ligaId);
+        } catch (FeignException.NotFound ex) {
+            log.warn("[ORC-LEAGUE] Liga não encontrada ao tentar excluir. ligaId={}, detalhe={}",
+                    ligaId, ex.contentUTF8());
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, ex.contentUTF8());
+        } catch (FeignException.Conflict ex) {
+            log.warn("[ORC-LEAGUE] Conflito ao excluir liga. ligaId={}, detalhe={}",
+                    ligaId, ex.contentUTF8());
+            throw new ResponseStatusException(HttpStatus.CONFLICT, ex.contentUTF8());
+        } catch (RetryableException ex) {
+            log.error("[ORC-LEAGUE] Timeout ao chamar league-service na exclusão de liga. ligaId={}", ligaId, ex);
+            throw new ResponseStatusException(HttpStatus.GATEWAY_TIMEOUT, "league-service timeout");
+        } catch (FeignException ex) {
+            log.error("[ORC-LEAGUE] Erro genérico do league-service ao excluir liga. ligaId={}, status={}",
+                    ligaId, ex.status(), ex);
+            throw new ResponseStatusException(HttpStatus.BAD_GATEWAY, "league-service error: " + ex.status());
+        }
+    }
+
+    public PageResponse<LigaResponse> listarLigasPorUsuario(UUID userId, int page, int size) {
+        log.info("[ORC-LEAGUE] Listando ligas do usuário. userId={}, page={}, size={}", userId, page, size);
+
+        var resp = port.listarLigasPorUsuario(userId, page, size);
+
+        log.debug("[ORC-LEAGUE] Listagem de ligas concluída. userId={}, totalElements={}",
+                userId, resp.totalElements());
+
+        return resp;
+    }
 }

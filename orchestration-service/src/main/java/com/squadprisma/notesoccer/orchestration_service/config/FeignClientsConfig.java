@@ -1,6 +1,6 @@
 package com.squadprisma.notesoccer.orchestration_service.config;
 
-import com.squadprisma.notesoccer.orchestration_service.infra.DownstreamHttpException;
+import com.squadprisma.notesoccer.orchestration_service.infra.exceptionInfra.DownstreamHttpException;
 import feign.Util;
 import feign.codec.ErrorDecoder;
 import org.springframework.cloud.openfeign.EnableFeignClients;

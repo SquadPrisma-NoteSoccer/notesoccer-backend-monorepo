@@ -2,7 +2,7 @@ package com.squadprisma.notesoccer.orchestration_service.infra.feign;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.squadprisma.notesoccer.orchestration_service.infra.DownstreamClientException;
+import com.squadprisma.notesoccer.orchestration_service.infra.exceptionInfra.DownstreamClientException;
 import feign.Response;
 import feign.codec.ErrorDecoder;
 import org.springframework.http.HttpStatus;

@@ -197,4 +197,170 @@ public class LeagueOrchestrationServiceTest {
         verify(port).contarTimes(ligaId);
         verifyNoMoreInteractions(port);
     }
+
+    @Test
+    void deletarTime_deveDelegarParaPorta_eNaoLancarErro() {
+        UUID timeId = UUID.randomUUID();
+        doNothing().when(port).deletarTime(ligaId, timeId);
+
+        service.deletarTime(ligaId, timeId);
+
+        verify(port).deletarTime(ligaId, timeId);
+        verifyNoMoreInteractions(port);
+    }
+
+    @Test
+    void deletarTime_deveMapear404ParaResponseStatusExceptionNotFound() {
+        UUID timeId = UUID.randomUUID();
+        FeignException.NotFound notFound = mock(FeignException.NotFound.class);
+        when(notFound.contentUTF8()).thenReturn("TEAM_NOT_FOUND");
+
+        doThrow(notFound).when(port).deletarTime(ligaId, timeId);
+
+        ResponseStatusException ex = assertThrows(ResponseStatusException.class,
+                () -> service.deletarTime(ligaId, timeId));
+
+        assertThat(ex.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
+        assertThat(ex.getReason()).isEqualTo("TEAM_NOT_FOUND");
+        verify(port).deletarTime(ligaId, timeId);
+        verifyNoMoreInteractions(port);
+    }
+
+    @Test
+    void deletarTime_deveMapear409ParaResponseStatusExceptionConflict() {
+        UUID timeId = UUID.randomUUID();
+        FeignException.Conflict conflict = mock(FeignException.Conflict.class);
+        when(conflict.contentUTF8()).thenReturn("TEAM_IN_USE");
+
+        doThrow(conflict).when(port).deletarTime(ligaId, timeId);
+
+        ResponseStatusException ex = assertThrows(ResponseStatusException.class,
+                () -> service.deletarTime(ligaId, timeId));
+
+        assertThat(ex.getStatusCode()).isEqualTo(HttpStatus.CONFLICT);
+        assertThat(ex.getReason()).isEqualTo("TEAM_IN_USE");
+        verify(port).deletarTime(ligaId, timeId);
+        verifyNoMoreInteractions(port);
+    }
+
+    @Test
+    void deletarTime_deveMapearRetryableExceptionPara504() {
+        UUID timeId = UUID.randomUUID();
+        RetryableException retryable = mock(RetryableException.class);
+
+        doThrow(retryable).when(port).deletarTime(ligaId, timeId);
+
+        ResponseStatusException ex = assertThrows(ResponseStatusException.class,
+                () -> service.deletarTime(ligaId, timeId));
+
+        assertThat(ex.getStatusCode()).isEqualTo(HttpStatus.GATEWAY_TIMEOUT);
+        assertThat(ex.getReason()).isEqualTo("league-service timeout");
+        verify(port).deletarTime(ligaId, timeId);
+        verifyNoMoreInteractions(port);
+    }
+
+    @Test
+    void deletarTime_deveMapearFeignGenericoPara502() {
+        UUID timeId = UUID.randomUUID();
+        FeignException generic = mock(FeignException.class);
+        when(generic.status()).thenReturn(500);
+
+        doThrow(generic).when(port).deletarTime(ligaId, timeId);
+
+        ResponseStatusException ex = assertThrows(ResponseStatusException.class,
+                () -> service.deletarTime(ligaId, timeId));
+
+        assertThat(ex.getStatusCode()).isEqualTo(HttpStatus.BAD_GATEWAY);
+        assertThat(ex.getReason()).isEqualTo("league-service error: 500");
+        verify(port).deletarTime(ligaId, timeId);
+        verifyNoMoreInteractions(port);
+    }
+
+    @Test
+    void deletarLiga_deveDelegarParaPorta_eNaoLancarErro() {
+        doNothing().when(port).deletarLiga(ligaId);
+
+        service.deletarLiga(ligaId);
+
+        verify(port).deletarLiga(ligaId);
+        verifyNoMoreInteractions(port);
+    }
+
+    @Test
+    void deletarLiga_deveMapear404ParaNotFound() {
+        FeignException.NotFound notFound = mock(FeignException.NotFound.class);
+        when(notFound.contentUTF8()).thenReturn("LEAGUE_NOT_FOUND");
+
+        doThrow(notFound).when(port).deletarLiga(ligaId);
+
+        ResponseStatusException ex = assertThrows(ResponseStatusException.class,
+                () -> service.deletarLiga(ligaId));
+
+        assertThat(ex.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
+        assertThat(ex.getReason()).isEqualTo("LEAGUE_NOT_FOUND");
+        verify(port).deletarLiga(ligaId);
+        verifyNoMoreInteractions(port);
+    }
+
+    @Test
+    void deletarLiga_deveMapear409ParaConflict() {
+        FeignException.Conflict conflict = mock(FeignException.Conflict.class);
+        when(conflict.contentUTF8()).thenReturn("LEAGUE_IN_USE");
+
+        doThrow(conflict).when(port).deletarLiga(ligaId);
+
+        ResponseStatusException ex = assertThrows(ResponseStatusException.class,
+                () -> service.deletarLiga(ligaId));
+
+        assertThat(ex.getStatusCode()).isEqualTo(HttpStatus.CONFLICT);
+        assertThat(ex.getReason()).isEqualTo("LEAGUE_IN_USE");
+        verify(port).deletarLiga(ligaId);
+        verifyNoMoreInteractions(port);
+    }
+
+    @Test
+    void deletarLiga_deveMapearRetryablePara504() {
+        RetryableException retryable = mock(RetryableException.class);
+
+        doThrow(retryable).when(port).deletarLiga(ligaId);
+
+        ResponseStatusException ex = assertThrows(ResponseStatusException.class,
+                () -> service.deletarLiga(ligaId));
+
+        assertThat(ex.getStatusCode()).isEqualTo(HttpStatus.GATEWAY_TIMEOUT);
+        assertThat(ex.getReason()).isEqualTo("league-service timeout");
+        verify(port).deletarLiga(ligaId);
+        verifyNoMoreInteractions(port);
+    }
+
+    @Test
+    void deletarLiga_deveMapearFeignGenericoPara502() {
+        FeignException generic = mock(FeignException.class);
+        when(generic.status()).thenReturn(502);
+
+        doThrow(generic).when(port).deletarLiga(ligaId);
+
+        ResponseStatusException ex = assertThrows(ResponseStatusException.class,
+                () -> service.deletarLiga(ligaId));
+
+        assertThat(ex.getStatusCode()).isEqualTo(HttpStatus.BAD_GATEWAY);
+        assertThat(ex.getReason()).isEqualTo("league-service error: 502");
+        verify(port).deletarLiga(ligaId);
+        verifyNoMoreInteractions(port);
+    }
+
+    @Test
+    void listarLigasPorUsuario_deveDelegarParaPorta() {
+        UUID userId = UUID.randomUUID();
+        LigaResponse lr = new LigaResponse(UUID.randomUUID(), "Liga X", Instant.now());
+        PageResponse<LigaResponse> page = new PageResponse<>(List.of(lr), 0, 20, 1, 1);
+
+        when(port.listarLigasPorUsuario(userId, 0, 20)).thenReturn(page);
+
+        var out = service.listarLigasPorUsuario(userId, 0, 20);
+
+        assertThat(out.totalElements()).isEqualTo(1);
+        verify(port).listarLigasPorUsuario(userId, 0, 20);
+        verifyNoMoreInteractions(port);
+    }
 }

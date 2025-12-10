@@ -93,4 +93,46 @@ public class OrchestrationLigaController {
 
         return resp;
     }
+
+    @DeleteMapping("/{ligaId}/times/{timeId}")
+    @Operation(summary = "Excluir time de uma liga")
+    public ResponseEntity<Void> deletarTime(
+            @PathVariable UUID ligaId,
+            @PathVariable UUID timeId
+    ) {
+        log.info("Orchestrator - Excluir time de liga. ligaId={}, timeId={}", ligaId, timeId);
+
+        service.deletarTime(ligaId, timeId);
+
+        log.info("Orchestrator - Time excluído com sucesso. ligaId={}, timeId={}", ligaId, timeId);
+        return ResponseEntity.noContent().build();
+    }
+
+    @DeleteMapping("/{ligaId}")
+    @Operation(summary = "Excluir liga")
+    public ResponseEntity<Void> deletarLiga(@PathVariable UUID ligaId) {
+        log.info("Orchestrator - Excluir liga. ligaId={}", ligaId);
+
+        service.deletarLiga(ligaId);
+
+        log.info("Orchestrator - Liga excluída com sucesso. ligaId={}", ligaId);
+        return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping
+    @Operation(summary = "Listar ligas de um usuário")
+    public PageResponse<LigaResponse> listarLigasPorUsuario(
+            @RequestParam UUID userId,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "20") int size
+    ) {
+        log.info("Orchestrator - Listar ligas por usuário. userId={}, page={}, size={}", userId, page, size);
+
+        var resp = service.listarLigasPorUsuario(userId, page, size);
+
+        log.debug("Orchestrator - Listagem de ligas concluída. userId={}, totalElements={}",
+                userId, resp.totalElements());
+
+        return resp;
+    }
 }

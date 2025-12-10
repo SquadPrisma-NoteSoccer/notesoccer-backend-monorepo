@@ -1,4 +1,4 @@
-package com.squadprisma.notesoccer.orchestration_service.infra;
+package com.squadprisma.notesoccer.orchestration_service.infra.exceptionInfra;
 
 import org.springframework.http.HttpStatus;
 
