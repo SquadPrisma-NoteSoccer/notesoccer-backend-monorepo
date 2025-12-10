@@ -4,7 +4,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.squadprisma.notesoccer.league_service.api.dto.TimeCreateRequest;
 import com.squadprisma.notesoccer.league_service.domain.entity.Liga;
 import com.squadprisma.notesoccer.league_service.domain.entity.Time;
+import com.squadprisma.notesoccer.league_service.domain.exception.BadRequestException;
 import com.squadprisma.notesoccer.league_service.domain.exception.ConflictException;
+import com.squadprisma.notesoccer.league_service.domain.exception.NotFoundException;
 import com.squadprisma.notesoccer.league_service.service.TimeService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,7 +18,8 @@ import org.springframework.test.web.servlet.MockMvc;
 import java.util.UUID;
 
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -83,6 +86,46 @@ public class TimeControllerTest extends BaseControllerTest {
                         .content(om.writeValueAsString(body)))
                 .andExpect(status().isConflict())
                 .andExpect(jsonPath("$.code").value("TEAM_ALREADY_EXISTS"));
+    }
+
+    @Test
+    void delete_team_204() throws Exception {
+        UUID ligaId = UUID.randomUUID();
+        UUID timeId = UUID.randomUUID();
+
+        mvc.perform(delete("/api/v1/times/{timeId}", timeId)
+                        .param("ligaId", ligaId.toString()))
+                .andExpect(status().isNoContent());
+
+        verify(service, times(1)).delete(ligaId, timeId);
+    }
+
+    @Test
+    void delete_team_404_not_found() throws Exception {
+        UUID ligaId = UUID.randomUUID();
+        UUID timeId = UUID.randomUUID();
+
+        doThrow(new NotFoundException("TEAM_NOT_FOUND"))
+                .when(service).delete(ligaId, timeId);
+
+        mvc.perform(delete("/api/v1/times/{timeId}", timeId)
+                        .param("ligaId", ligaId.toString()))
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("$.code").value("TEAM_NOT_FOUND"));
+    }
+
+    @Test
+    void delete_team_400_time_nao_pertence_a_liga() throws Exception {
+        UUID ligaId = UUID.randomUUID();
+        UUID timeId = UUID.randomUUID();
+
+        doThrow(new BadRequestException("TEAM_NOT_IN_LEAGUE"))
+                .when(service).delete(ligaId, timeId);
+
+        mvc.perform(delete("/api/v1/times/{timeId}", timeId)
+                        .param("ligaId", ligaId.toString()))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.code").value("TEAM_NOT_IN_LEAGUE"));
     }
 
 

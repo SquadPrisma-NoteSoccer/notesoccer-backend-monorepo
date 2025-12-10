@@ -69,4 +69,14 @@ public class TimeController {
     public TimeCountResponse count(@RequestParam UUID ligaId) {
         return new TimeCountResponse(ligaId, service.count(ligaId));
     }
+
+    @DeleteMapping("/{timeId}")
+    @Operation(summary = "Remover time de uma liga")
+    public ResponseEntity<Void> delete(
+            @PathVariable UUID timeId,
+            @RequestParam UUID ligaId
+    ){
+        service.delete(ligaId, timeId);
+        return ResponseEntity.noContent().build();
+    }
 }

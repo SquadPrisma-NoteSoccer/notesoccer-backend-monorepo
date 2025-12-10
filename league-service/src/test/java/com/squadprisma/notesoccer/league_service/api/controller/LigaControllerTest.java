@@ -3,6 +3,7 @@ package com.squadprisma.notesoccer.league_service.api.controller;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.squadprisma.notesoccer.league_service.api.dto.LigaCreateRequest;
 import com.squadprisma.notesoccer.league_service.domain.entity.Liga;
+import com.squadprisma.notesoccer.league_service.domain.exception.NotFoundException;
 import com.squadprisma.notesoccer.league_service.service.LigaService;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -14,6 +15,7 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.UUID;
 
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -45,4 +47,31 @@ public class LigaControllerTest extends BaseControllerTest {
                 .andExpect(jsonPath("$.nome").value("Liga X"));
     }
 
+    @Test
+    void delete_league_404_not_found() throws Exception {
+        UUID ligaId = UUID.randomUUID();
+
+        Mockito.doThrow(new NotFoundException("LEAGUE_NOT_FOUND"))
+                .when(service)
+                .delete(ligaId);
+
+        mvc.perform(delete("/api/v1/ligas/{ligaId}", ligaId))
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("$.code").value("LEAGUE_NOT_FOUND"));
+    }
+
+    @Test
+    void delete_league_204() throws Exception {
+        UUID ligaId = UUID.randomUUID();
+
+        // não lança exceção → sucesso
+        Mockito.doNothing()
+                .when(service)
+                .delete(ligaId);
+
+        mvc.perform(delete("/api/v1/ligas/{ligaId}", ligaId))
+                .andExpect(status().isNoContent());
+
+        Mockito.verify(service, Mockito.times(1)).delete(ligaId);
+    }
 }
