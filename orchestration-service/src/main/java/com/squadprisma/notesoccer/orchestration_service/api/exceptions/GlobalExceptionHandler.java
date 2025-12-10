@@ -1,13 +1,12 @@
 package com.squadprisma.notesoccer.orchestration_service.api.exceptions;
 
 import com.squadprisma.notesoccer.orchestration_service.domain.exception.ConflictException;
-import com.squadprisma.notesoccer.orchestration_service.infra.DownstreamClientException;
+import com.squadprisma.notesoccer.orchestration_service.infra.exceptionInfra.DownstreamClientException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.ConstraintViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
-import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;

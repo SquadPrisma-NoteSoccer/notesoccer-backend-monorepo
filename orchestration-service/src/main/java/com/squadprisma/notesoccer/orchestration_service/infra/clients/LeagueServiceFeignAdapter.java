@@ -38,4 +38,19 @@ public class LeagueServiceFeignAdapter implements LeagueServicePort {
     public TimeCountResponse contarTimes(UUID ligaId) {
         return client.contarTimes(ligaId);
     }
+
+    @Override
+    public void deletarTime(UUID ligaId, UUID timeId) {
+        client.deleteTime(ligaId, timeId);
+    }
+
+    @Override
+    public void deletarLiga(UUID ligaId) {
+        client.deleteLeague(ligaId);
+    }
+
+    @Override
+    public PageResponse<LigaResponse> listarLigasPorUsuario(UUID userId, int page, int size) {
+        return client.listLeaguesByUser(userId, page, size);
+    }
 }

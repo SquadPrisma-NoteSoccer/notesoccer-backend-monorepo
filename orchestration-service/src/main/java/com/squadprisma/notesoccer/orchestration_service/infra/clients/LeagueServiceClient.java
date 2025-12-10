@@ -36,4 +36,17 @@ public interface LeagueServiceClient {
 
     @GetMapping("/api/v1/times/count")
     TimeCountResponse contarTimes(@RequestParam("ligaId") UUID ligaId);
+
+    @DeleteMapping("/api/v1/times/{timeId}")
+    void deleteTime(@PathVariable UUID timeId, @RequestParam UUID ligaId);
+
+    @DeleteMapping("/api/v1/ligas/{ligaId}")
+    void deleteLeague(@PathVariable UUID ligaId);
+
+    @GetMapping("/api/v1/ligas")
+    PageResponse<LigaResponse> listLeaguesByUser(
+            @RequestParam UUID userId,
+            @RequestParam int page,
+            @RequestParam int size
+    );
 }

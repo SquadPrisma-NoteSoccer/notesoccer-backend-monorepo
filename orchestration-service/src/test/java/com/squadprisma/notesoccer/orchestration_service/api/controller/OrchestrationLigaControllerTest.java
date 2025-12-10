@@ -11,6 +11,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Import;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
@@ -24,9 +25,9 @@ import static org.hamcrest.Matchers.containsString;
 
 import static org.hamcrest.Matchers.hasSize;
 import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.Mockito.verify;
 import static org.springframework.http.HttpStatus.CONFLICT;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -128,5 +129,83 @@ public class OrchestrationLigaControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.ligaId").value(ligaId.toString()))
                 .andExpect(jsonPath("$.count").value(7));
+    }
+
+    @Test
+    void delete_league_204() throws Exception {
+        UUID ligaId = UUID.randomUUID();
+
+        mvc.perform(delete("/api/v1/orquestrador/ligas/{ligaId}", ligaId))
+                .andExpect(status().isNoContent());
+
+        verify(service).deletarLiga(ligaId);
+    }
+
+    @Test
+    void delete_league_404_not_found() throws Exception {
+        UUID ligaId = UUID.randomUUID();
+
+        Mockito.doThrow(new ResponseStatusException(HttpStatus.NOT_FOUND, "LEAGUE_NOT_FOUND"))
+                .when(service)
+                .deletarLiga(ligaId);
+
+        mvc.perform(delete("/api/v1/orquestrador/ligas/{ligaId}", ligaId))
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("$.code").value("LEAGUE_NOT_FOUND"));
+    }
+
+    @Test
+    void get_leagues_by_user_200() throws Exception {
+        UUID userId = UUID.randomUUID();
+        UUID ligaId = UUID.randomUUID();
+
+        LigaResponse liga = new LigaResponse(
+                ligaId,
+                "Liga do Leo",
+                Instant.parse("2025-01-01T10:00:00Z")
+        );
+
+        PageResponse<LigaResponse> page = new PageResponse<>(
+                List.of(liga),
+                0,
+                20,
+                1L,
+                1
+        );
+
+        Mockito.when(service.listarLigasPorUsuario(eq(userId), anyInt(), anyInt()))
+                .thenReturn(page);
+
+        mvc.perform(get("/api/v1/orquestrador/ligas")
+                        .param("userId", userId.toString())
+                        .param("page", "0")
+                        .param("size", "20"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.content[0].id").value(ligaId.toString()))
+                .andExpect(jsonPath("$.content[0].nome").value("Liga do Leo"))
+                .andExpect(jsonPath("$.totalElements").value(1));
+    }
+    @Test
+    void delete_time_204() throws Exception {
+        UUID ligaId = UUID.randomUUID();
+        UUID timeId = UUID.randomUUID();
+
+        mvc.perform(delete("/api/v1/orquestrador/ligas/{ligaId}/times/{timeId}", ligaId, timeId))
+                .andExpect(status().isNoContent());
+
+        verify(service).deletarTime(ligaId, timeId);
+    }
+    @Test
+    void delete_time_404_team_not_found() throws Exception {
+        UUID ligaId = UUID.randomUUID();
+        UUID timeId = UUID.randomUUID();
+
+        Mockito.doThrow(new ResponseStatusException(HttpStatus.NOT_FOUND, "TEAM_NOT_FOUND"))
+                .when(service)
+                .deletarTime(ligaId, timeId);
+
+        mvc.perform(delete("/api/v1/orquestrador/ligas/{ligaId}/times/{timeId}", ligaId, timeId))
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("$.code").value("TEAM_NOT_FOUND"));
     }
 }
