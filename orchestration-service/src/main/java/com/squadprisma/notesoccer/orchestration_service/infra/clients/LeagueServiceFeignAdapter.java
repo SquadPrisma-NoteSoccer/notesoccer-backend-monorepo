@@ -40,8 +40,8 @@ public class LeagueServiceFeignAdapter implements LeagueServicePort {
     }
 
     @Override
-    public void deletarTime(UUID ligaId, UUID timeId) {
-        client.deleteTime(ligaId, timeId);
+    public void deletarTime(UUID timeId, UUID ligaId) {
+        client.deleteTime(timeId, ligaId);
     }
 
     @Override

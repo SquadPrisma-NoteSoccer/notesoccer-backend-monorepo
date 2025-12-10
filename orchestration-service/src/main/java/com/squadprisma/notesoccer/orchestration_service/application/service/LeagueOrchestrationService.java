@@ -107,7 +107,9 @@ public class LeagueOrchestrationService {
     public void deletarTime(UUID ligaId, UUID timeId) {
         log.info("[ORC-LEAGUE] Iniciando exclusão de time. ligaId={}, timeId={}", ligaId, timeId);
         try {
-            port.deletarTime(ligaId, timeId);
+            // ✅ aqui conversa com o league-service: timeId no path, ligaId como query param
+            port.deletarTime(timeId, ligaId);
+
             log.info("[ORC-LEAGUE] Time excluído com sucesso no league-service. ligaId={}, timeId={}", ligaId, timeId);
         } catch (FeignException.NotFound ex) {
             log.warn("[ORC-LEAGUE] Time não encontrado ao tentar excluir. ligaId={}, timeId={}, detalhe={}",

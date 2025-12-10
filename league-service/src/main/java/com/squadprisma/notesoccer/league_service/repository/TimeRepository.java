@@ -15,4 +15,6 @@ public interface TimeRepository extends JpaRepository<Time, UUID> {
     long countByLiga(Liga liga);
 
     Page<Time> findByLiga_IdOrderByNomeAsc(UUID ligaId, Pageable pageable);
+
+    long deleteByLiga(Liga liga);
 }
