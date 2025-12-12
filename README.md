@@ -6,13 +6,15 @@ Este repositório contém todos os **microserviços backend** do projeto **NoteS
 <br><br>
 ## 📂 Estrutura
 
-/orchestration-service     # Camada de orquestração (Sagas/Workflows)
-/user-service              # Gestão de usuários
-/league-service            # Gestão de Ligas e times
-/match-service             # Gestão de Partidas
-/flyer-service             # Geração de flyers
-/notification-service      # Notificações
-/docker                    # Arquivos docker-compose e configs de execução local
+- orchestration-service: Camada de orquestração (Sagas/Workflows)
+- user-service: Gestão de usuários
+- league-service: Gestão de Ligas e times
+- match-service: Gestão de Partidas
+- flyer-service: Geração de flyers
+- notification-service: Notificações
+- docker: Arquivos docker-compose e configs de execução local
+
+
 <br><br>
 ## 🚀 Tecnologias
 
